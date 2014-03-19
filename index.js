@@ -34,7 +34,6 @@ var fetchBbox = function(url, bbox, oidField, existingFeatures, callback) {
         if (!error && response.statusCode == 200) {
             console.log(data.features.length + " features in the envelope.");
 
-            var newFeatures = [];
             if (data.features.length == 1000) {
                 // If we get back the maximum number of results, break the
                 // bbox up into 4 smaller chunks and request those.
@@ -44,16 +43,15 @@ var fetchBbox = function(url, bbox, oidField, existingFeatures, callback) {
                 }
             } else {
                 for (var j = 0; j < data.features.length; j++) {
-                    var thisFeature = data.features[j];
-                    if (!(thisFeature.attributes[oidField] in existingFeatures)) {
-                        newFeatures.push(thisFeature);
-                        existingFeatures[thisFeature.attributes[oidField]] = thisFeature;
+                    var thisFeature = data.features[j],
+                        thisFeatureOid = thisFeature.attributes[oidField];
+                    if (!(thisFeatureOid in existingFeatures)) {
+                        existingFeatures[thisFeatureOid] = thisFeature;
                     }
                 }
                 console.log(Object.keys(existingFeatures).length + " unique features");
-                console.log(newFeatures.length + " new features");
             }
-            return callback(null, newFeatures);
+            return callback(null, existingFeatures);
         } else {
             return callback(error);
         }
@@ -95,7 +93,7 @@ dump.fetch = function(base_url, callback) {
             }
 
             // Start by requesting the whould bounding box for the layer
-            fetchBbox(base_url, bounds, oidField.name, results);
+            return fetchBbox(base_url, bounds, oidField.name, results, callback);
         } else {
             return callback(error);
         }
@@ -103,5 +101,5 @@ dump.fetch = function(base_url, callback) {
 };
 
 dump.fetch('http://maps.huntsvilleal.gov/ArcGIS/rest/services/Layers/Addresses/MapServer/3', function(error, results) {
-    console.log("Results: " + error + ", " + results);
+    console.log("Results: " + error + ", " + Object.keys(results).length);
 });
