@@ -15,6 +15,7 @@ var splitBbox = function(bbox) {
     ];
 };
 var fetchBbox = function(url, bbox, oidField, existingFeatures, callback) {
+    // Build up a URL that makes ESRI happy
     var args = {
         geometry: bbox.xmin+","+bbox.ymin+","+bbox.xmax+","+bbox.ymax,
         geometryType: 'esriGeometryEnvelope',
@@ -31,31 +32,32 @@ var fetchBbox = function(url, bbox, oidField, existingFeatures, callback) {
 
     request.get({url: fullUrl, json:true}, function(error, response, data) {
         if (!error && response.statusCode == 200) {
-            console.log(data);
-            handleBbox(url, bbox, oidField, existingFeatures, data, callback);
+            console.log(data.features.length + " features in the envelope.");
+
+            var newFeatures = [];
+            if (data.features.length == 1000) {
+                // If we get back the maximum number of results, break the
+                // bbox up into 4 smaller chunks and request those.
+                var subboxes = splitBbox(bbox);
+                for (var i = 0; i < subboxes.length; i++) {
+                    fetchBbox(url, subboxes[i], oidField, existingFeatures, callback);
+                }
+            } else {
+                for (var j = 0; j < data.features.length; j++) {
+                    var thisFeature = data.features[j];
+                    if (!(thisFeature.attributes[oidField] in existingFeatures)) {
+                        newFeatures.push(thisFeature);
+                        existingFeatures[thisFeature.attributes[oidField]] = thisFeature;
+                    }
+                }
+                console.log(Object.keys(existingFeatures).length + " unique features");
+                console.log(newFeatures.length + " new features");
+            }
+            return callback(null, newFeatures);
         } else {
-            callback(error);
+            return callback(error);
         }
     });
-};
-var handleBbox = function(url, bbox, oidField, existingFeatures, data, callback) {
-    if (data.features.length == 1000) {
-        var subboxes = splitBbox(bbox);
-        for (var i = 0; i < subboxes.length; i++) {
-            fetchBbox(url, subboxes[i], oidField, existingFeatures, handleBbox);
-        }
-    } else {
-        var newFeatures = [];
-        for (var j = 0; j < data.features.length; j++) {
-            var thisFeature = data.features[j];
-            if (!(thisFeature.attributes[oidField] in existingFeatures)) {
-                newFeatures.push(thisFeature);
-                existingFeatures[thisFeature.attributes[oidField]] = thisFeature;
-            }
-        }
-        callback(null, newFeatures);
-        console.log(newFeatures.length + " features");
-    }
 };
 var findOidField = function(fields) {
     for (var i = 0; i < fields.length; i++) {
@@ -69,8 +71,7 @@ var findOidField = function(fields) {
 var dump = module.exports = {};
 
 dump.fetch = function(base_url, callback) {
-    var results = {},
-        q = queue(1);
+    var results = {};
 
     // Get the layer's metadata
     request.get({url: base_url + '?f=json', json:true}, function(error, response, metadata) {
@@ -93,19 +94,12 @@ dump.fetch = function(base_url, callback) {
                 return callback("Specified layer has sublayers.");
             }
 
-            fetchBbox(base_url, bounds, oidField, results, function(error, data) {
-                if (error) {
-                    callback(error);
-                } else {
-                    return callback(null, data);
-                }
-            });
+            // Start by requesting the whould bounding box for the layer
+            fetchBbox(base_url, bounds, oidField.name, results);
         } else {
             return callback(error);
         }
     });
-
-    callback(null, results);
 };
 
 dump.fetch('http://maps.huntsvilleal.gov/ArcGIS/rest/services/Layers/Addresses/MapServer/3', function(error, results) {
