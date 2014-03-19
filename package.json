@@ -1,0 +1,21 @@
+{
+  "name": "esri-dump",
+  "version": "0.0.1",
+  "author": "Ian Dees <ian.dees@gmail.com>",
+  "description": "Assist with pulling data out of an ESRI ArcGIS REST server into a more useful format.",
+  "scripts": {
+    "test": "tape test/*.js"
+  },
+  "main": "index.js",
+  "license": "BSD",
+  "engines": {
+    "node": ">=0.8"
+  },
+  "devDependencies": {
+    "glob": "~3.2.9",
+    "tape": "~2.10.2",
+    "tap": "~0.4.8",
+    "queue-async": "~1.0.7",
+    "request": "~2.34.0"
+  }
+}
