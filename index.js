@@ -14,7 +14,7 @@ var splitBbox = function(bbox) {
         {xmin: bbox.xmin + halfWidth, ymin: bbox.ymin + halfHeight, xmax: bbox.xmax,             ymax: bbox.ymax}
     ];
 };
-var fetchBbox = function(url, bbox, callback) {
+var fetchBbox = function(url, bbox, oidField, existingFeatures, callback) {
     var args = {
         geometry: bbox.xmin+","+bbox.ymin+","+bbox.xmax+","+bbox.ymax,
         geometryType: 'esriGeometryEnvelope',
@@ -27,10 +27,43 @@ var fetchBbox = function(url, bbox, callback) {
         f: 'JSON'
     },
     fullUrl = url + '/query?' + qs.stringify(args);
-
     console.log(fullUrl);
 
-    request.get({url: fullUrl, json:true}, callback);
+    request.get({url: fullUrl, json:true}, function(error, response, data) {
+        if (!error && response.statusCode == 200) {
+            console.log(data);
+            handleBbox(url, bbox, oidField, existingFeatures, data, callback);
+        } else {
+            callback(error);
+        }
+    });
+};
+var handleBbox = function(url, bbox, oidField, existingFeatures, data, callback) {
+    if (data.features.length == 1000) {
+        var subboxes = splitBbox(bbox);
+        for (var i = 0; i < subboxes.length; i++) {
+            fetchBbox(url, subboxes[i], oidField, existingFeatures, handleBbox);
+        }
+    } else {
+        var newFeatures = [];
+        for (var j = 0; j < data.features.length; j++) {
+            var thisFeature = data.features[j];
+            if (!(thisFeature.attributes[oidField] in existingFeatures)) {
+                newFeatures.push(thisFeature);
+                existingFeatures[thisFeature.attributes[oidField]] = thisFeature;
+            }
+        }
+        callback(null, newFeatures);
+        console.log(newFeatures.length + " features");
+    }
+};
+var findOidField = function(fields) {
+    for (var i = 0; i < fields.length; i++) {
+        if (fields[i].type == 'esriFieldTypeOID') {
+            return fields[i];
+        }
+    }
+    return null;
 };
 
 var dump = module.exports = {};
@@ -47,12 +80,26 @@ dump.fetch = function(base_url, callback) {
             }
 
             var bounds = metadata.extent;
-
             if (!bounds) {
                 return callback("Layer doesn't list an extent.");
             }
 
-            fetchBbox(base_url, bounds, callback);
+            var oidField = findOidField(metadata.fields);
+            if (!oidField) {
+                return callback("Could not find an OID field.");
+            }
+
+            if (metadata.subLayers.length > 0) {
+                return callback("Specified layer has sublayers.");
+            }
+
+            fetchBbox(base_url, bounds, oidField, results, function(error, data) {
+                if (error) {
+                    callback(error);
+                } else {
+                    return callback(null, data);
+                }
+            });
         } else {
             return callback(error);
         }
@@ -61,6 +108,6 @@ dump.fetch = function(base_url, callback) {
     callback(null, results);
 };
 
-dump.fetch('http://gis.co.crow-wing.mn.us/arcgis/rest/services/CROWWINGGENERAL/MapServer/13', function(error, results, content) {
-    console.log(content);
+dump.fetch('http://maps.huntsvilleal.gov/ArcGIS/rest/services/Layers/Addresses/MapServer/3', function(error, results) {
+    console.log("Results: " + error + ", " + results);
 });
