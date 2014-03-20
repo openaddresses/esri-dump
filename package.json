@@ -6,6 +6,9 @@
   "scripts": {
     "test": "tape test/*.js"
   },
+  "bin": {
+    "esri-dump": "cli.js"
+  },
   "main": "index.js",
   "license": "BSD",
   "engines": {
@@ -15,7 +18,6 @@
     "glob": "~3.2.9",
     "tape": "~2.10.2",
     "tap": "~0.4.8",
-    "queue-async": "~1.0.7",
     "request": "~2.34.0",
     "queue-async": "~1.0.7"
   }
