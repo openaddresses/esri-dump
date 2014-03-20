@@ -89,7 +89,7 @@ dump.fetch = function(base_url, callback) {
                 return callback("Could not find an OID field.");
             }
 
-            if (metadata.subLayers.length > 0) {
+            if ('subLayers' in metadata && metadata.subLayers.length > 0) {
                 return callback("Specified layer has sublayers.");
             }
 
@@ -100,7 +100,7 @@ dump.fetch = function(base_url, callback) {
                 Object.keys(results).forEach(function(key) {
                     features.push(results[key]);
                 });
-                return callback(error, features);
+                return callback(error, metadata.geometryType, features);
              });
         } else {
             return callback(error);
@@ -108,6 +108,42 @@ dump.fetch = function(base_url, callback) {
     });
 };
 
-dump.fetch('http://www.sjcgis.org/arcgis/rest/services/Polaris/LocationSearch/MapServer/0', function(error, results) {
-    console.log("Results: " + error + ", " + results.length);
+dump.fetch('http://gis.postfallsidaho.org/arcgis/rest/services/MAPGALLERY/Addresses/MapServer/0', function(error, geomType, results) {
+    geojson = {
+        type: 'FeatureCollection',
+        features: []
+    };
+
+    results.forEach(function(feature) {
+        if (geomType == 'esriGeometryPolygon') {
+            geojson.features.push({
+                'type': 'Feature',
+                'properties': feature.attributes,
+                'geometry': {
+                    'type': 'Polygon',
+                    'coordinates': feature.geometry.rings,
+                }
+            });
+        } else if (geomType == 'esriGeometryPolyline') {
+            geojson.features.push({
+                'type': 'Feature',
+                'properties': feature.attributes,
+                'geometry': {
+                    'type': 'MultiLineString',
+                    'coordinates': feature.geometry.paths,
+                }
+            });
+        } else if (geomType == 'esriGeometryPoint') {
+            geojson.features.push({
+                'type': 'Feature',
+                'properties': feature.attributes,
+                'geometry': {
+                    'type': 'Point',
+                    'coordinates': [feature.geometry.x, feature.geometry.y]
+                }
+            });
+        }
+    });
+
+    fs.writeFile('output.geojson', JSON.stringify(geojson, null, 2));
 });
