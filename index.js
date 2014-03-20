@@ -21,20 +21,15 @@ var fetchBbox = function(base_url, bounds, oidField, existingFeatures, queue, ca
         geometryType: 'esriGeometryEnvelope',
         spatialRel: 'esriSpatialRelIntersects',
         geometryPrecision: 7,
-        returnCountOnly: false,
-        returnIdsOnly: false,
         returnGeometry: true,
         outSR: 4326,
         outFields: '*',
         f: 'JSON'
     },
     fullUrl = base_url + '/query?' + qs.stringify(queryString);
-    console.log(fullUrl);
 
     request.get({url: fullUrl, json:true}, function(error, response, data) {
         if (!error && response.statusCode == 200) {
-            console.log(data.features.length + " features in the envelope.");
-
             if (data.features.length == 1000) {
                 // If we get back the maximum number of results, break the
                 // bbox up into 4 smaller chunks and request those.
@@ -109,7 +104,7 @@ dump.fetch = function(base_url, callback) {
     });
 };
 
-dump.fetch('http://www.maps.ccgisc.org/arcgis101/rest/services/Address/CCAddresses/MapServer/0', function(error, geomType, results) {
+dump.fetch('http://services2.bhamaps.com/arcgis/rest/services/AGS_jackson_co_il_taxmap/MapServer/0', function(error, geomType, results) {
     if (error) {
         console.log(error);
         process.exit(1);
