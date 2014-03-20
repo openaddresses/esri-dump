@@ -20,6 +20,7 @@ var fetchBbox = function(base_url, bounds, oidField, existingFeatures, queue, ca
         geometry: bounds.xmin+","+bounds.ymin+","+bounds.xmax+","+bounds.ymax,
         geometryType: 'esriGeometryEnvelope',
         spatialRel: 'esriSpatialRelIntersects',
+        geometryPrecision: 7,
         returnCountOnly: false,
         returnIdsOnly: false,
         returnGeometry: true,
@@ -108,7 +109,12 @@ dump.fetch = function(base_url, callback) {
     });
 };
 
-dump.fetch('http://gis.postfallsidaho.org/arcgis/rest/services/MAPGALLERY/Addresses/MapServer/0', function(error, geomType, results) {
+dump.fetch('http://www.maps.ccgisc.org/arcgis101/rest/services/Address/CCAddresses/MapServer/0', function(error, geomType, results) {
+    if (error) {
+        console.log(error);
+        process.exit(1);
+    }
+
     geojson = {
         type: 'FeatureCollection',
         features: []
