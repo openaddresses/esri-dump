@@ -14,10 +14,10 @@ var splitBbox = function(bbox) {
         {xmin: bbox.xmin + halfWidth, ymin: bbox.ymin + halfHeight, xmax: bbox.xmax,             ymax: bbox.ymax}
     ];
 };
-var fetchBbox = function(url, bbox, oidField, existingFeatures, callback) {
+var fetchBbox = function(base_url, bounds, oidField, existingFeatures, queue, callback) {
     // Build up a URL that makes ESRI happy
-    var args = {
-        geometry: bbox.xmin+","+bbox.ymin+","+bbox.xmax+","+bbox.ymax,
+    var queryString = {
+        geometry: bounds.xmin+","+bounds.ymin+","+bounds.xmax+","+bounds.ymax,
         geometryType: 'esriGeometryEnvelope',
         spatialRel: 'esriSpatialRelIntersects',
         returnCountOnly: false,
@@ -27,7 +27,7 @@ var fetchBbox = function(url, bbox, oidField, existingFeatures, callback) {
         outFields: '*',
         f: 'JSON'
     },
-    fullUrl = url + '/query?' + qs.stringify(args);
+    fullUrl = base_url + '/query?' + qs.stringify(queryString);
     console.log(fullUrl);
 
     request.get({url: fullUrl, json:true}, function(error, response, data) {
@@ -37,9 +37,9 @@ var fetchBbox = function(url, bbox, oidField, existingFeatures, callback) {
             if (data.features.length == 1000) {
                 // If we get back the maximum number of results, break the
                 // bbox up into 4 smaller chunks and request those.
-                var subboxes = splitBbox(bbox);
+                var subboxes = splitBbox(bounds);
                 for (var i = 0; i < subboxes.length; i++) {
-                    fetchBbox(url, subboxes[i], oidField, existingFeatures, callback);
+                    queue.defer(fetchBbox, base_url, subboxes[i], oidField, existingFeatures, queue);
                 }
             } else {
                 for (var j = 0; j < data.features.length; j++) {
@@ -51,7 +51,7 @@ var fetchBbox = function(url, bbox, oidField, existingFeatures, callback) {
                 }
                 console.log(Object.keys(existingFeatures).length + " unique features");
             }
-            return callback(null, existingFeatures);
+            return callback(null, null);
         } else {
             return callback(error);
         }
@@ -69,7 +69,8 @@ var findOidField = function(fields) {
 var dump = module.exports = {};
 
 dump.fetch = function(base_url, callback) {
-    var results = {};
+    var results = {},
+        q = queue(4);
 
     // Get the layer's metadata
     request.get({url: base_url + '?f=json', json:true}, function(error, response, metadata) {
@@ -93,13 +94,20 @@ dump.fetch = function(base_url, callback) {
             }
 
             // Start by requesting the whould bounding box for the layer
-            return fetchBbox(base_url, bounds, oidField.name, results, callback);
+            q.defer(fetchBbox, base_url, bounds, oidField.name, results, q);
+            q.awaitAll(function(error, data) {
+                var features = [];
+                Object.keys(results).forEach(function(key) {
+                    features.push(results[key]);
+                });
+                return callback(error, features);
+             });
         } else {
             return callback(error);
         }
     });
 };
 
-dump.fetch('http://maps.huntsvilleal.gov/ArcGIS/rest/services/Layers/Addresses/MapServer/3', function(error, results) {
-    console.log("Results: " + error + ", " + Object.keys(results).length);
+dump.fetch('http://www.sjcgis.org/arcgis/rest/services/Polaris/LocationSearch/MapServer/0', function(error, results) {
+    console.log("Results: " + error + ", " + results.length);
 });
