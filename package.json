@@ -15,10 +15,12 @@
     "node": ">=0.8"
   },
   "dependencies": {
-    "glob": "~3.2.9",
-    "tape": "~2.10.2",
-    "tap": "~0.4.8",
     "request": "~2.34.0",
     "queue-async": "~1.0.7"
+  },
+  "devDependencies": {
+    "glob": "~3.2.9",
+    "tape": "~2.10.2",
+    "tap": "~0.4.8"
   }
 }
