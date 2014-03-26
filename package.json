@@ -15,8 +15,9 @@
     "node": ">=0.8"
   },
   "dependencies": {
-    "request": "~2.34.0",
-    "queue-async": "~1.0.7"
+    "request": "^2.34.0",
+    "queue-async": "~1.0.7",
+    "es6-set": "0.0.0"
   },
   "devDependencies": {
     "glob": "~3.2.9",

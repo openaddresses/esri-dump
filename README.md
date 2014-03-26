@@ -11,15 +11,10 @@ This is based on [Python code](http://github.com/iandees/esri-dump) I wrote to d
 
 ## api
 
-`.fetch(url, callback)`
-
-Given a base MapServer URL, recursively download contents and call back
-with ¿"EsriJSON"?
-
-`.fetchGeoJSON(url, callback)`
-
-Given a base MapServer URL, recursively download contents and call back
-with GeoJSON
+```js
+var esriDump = require("esri-dump");
+esriDump(url).pipe(/*object stream of features*/)
+```
 
 ```sh
 npm install -g esri-dump
