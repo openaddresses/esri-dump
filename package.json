@@ -6,6 +6,10 @@
   "scripts": {
     "test": "tape test/*.js"
   },
+ "repository": {
+    "type": "git",
+    "url": "git://github.com/openaddresses/esri-dump.git"
+  },
   "bin": {
     "esri-dump": "cli.js"
   },
