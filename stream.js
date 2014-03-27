@@ -6,16 +6,16 @@ var request = require('request');
 module.exports = Downloader;
 util.inherits(Downloader, Readable);
 
-function Downloader(url, oidField, inBounds) {
-
+function Downloader(url, metadata) {
     Readable.call(this, {
         objectMode: true
     });
     this.baseUrl = url;
-    this.paths = [inBounds];
+    this.paths = [metadata.extent];
     this.inProgress = 0;
+    this.maxRecords = metadata.maxRecordCount || 1000;
     this.set = new ESet();
-    this.oidField = oidField;
+    this.oidField = findOidField(metadata.fields).name;
 }
 
 Downloader.prototype._read = function () {
@@ -44,7 +44,7 @@ Downloader.prototype._read = function () {
         if (error || response.statusCode !== 200) {
             return self.emit(error);
         }
-        if (data.features.length === 1000) {
+        if (data.exceededTransferLimit || data.features.length === self.maxRecords) {
           // If we get back the maximum number of results, break the
           // bbox up into 4 smaller chunks and request those.
             splitBbox(bounds).forEach(function (subbox) {
@@ -78,4 +78,9 @@ function splitBbox(bbox) {
         {xmin: bbox.xmin, ymin: bbox.ymin + halfHeight, xmax: bbox.xmin + halfWidth, ymax: bbox.ymax},
         {xmin: bbox.xmin + halfWidth, ymin: bbox.ymin + halfHeight, xmax: bbox.xmax, ymax: bbox.ymax}
     ];
+}
+function findOidField(fields) {
+    return fields.filter(function (field) {
+        return (field.type === 'esriFieldTypeOID');
+    })[0];
 }
