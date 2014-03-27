@@ -2,13 +2,8 @@
 var through = require('through2').obj;
 var request = require('request');
 var Downloader = require('./stream');
-function findOidField(fields) {
-    return fields.filter(function (field) {
-        return (field.type === 'esriFieldTypeOID');
-    })[0];
-}
 module.exports = function (url) {
-    var geomType; 
+    var geomType;
     var out = through(function (feature, _, callback) {
         var s = this;
         if (geomType === 'esriGeometryPolygon') {
@@ -17,7 +12,7 @@ module.exports = function (url) {
                 properties: feature.attributes,
                 geometry: {
                     type: 'Polygon',
-                    googordinates: feature.geometry.rings,
+                    coordinates: feature.geometry.rings,
                 }
             });
         } else if (geomType === 'esriGeometryPolyline') {
@@ -49,7 +44,6 @@ module.exports = function (url) {
             return out.emit('error', new Error('Layer doesn\'t support query operation.'));
         }
 
-        var oidField = findOidField(metadata.fields).name;
         geomType = metadata.geometryType;
         if (!geomType) {
             return out.emit('error', new Error('no geometry'));
@@ -57,13 +51,10 @@ module.exports = function (url) {
         if (!metadata.extent) {
             return out.emit('error', new Error('Layer doesn\'t list an extent.'));
         }
-        if (!oidField) {
-            return out.emit('error', new Error('Could not find an OID field.'));
-        }
         if ('subLayers' in metadata && metadata.subLayers.length > 0) {
             return out.emit('error', 'Specified layer has sublayers.');
         }
-        new Downloader(url, oidField, metadata.extent).pipe(out);
+        new Downloader(url, metadata).pipe(out);
     });
     return out;
 };

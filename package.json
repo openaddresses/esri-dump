@@ -6,7 +6,7 @@
   "scripts": {
     "test": "tape test/*.js"
   },
- "repository": {
+  "repository": {
     "type": "git",
     "url": "git://github.com/openaddresses/esri-dump.git"
   },
@@ -21,7 +21,8 @@
   "dependencies": {
     "request": "^2.34.0",
     "es6-set": "0.0.0",
-    "readable-stream": "^1.0.26-2"
+    "readable-stream": "^1.0.26-2",
+    "through2": "^0.4.1"
   },
   "devDependencies": {
     "glob": "~3.2.9",
