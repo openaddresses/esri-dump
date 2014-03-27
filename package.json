@@ -22,7 +22,8 @@
     "request": "^2.34.0",
     "es6-set": "0.0.0",
     "readable-stream": "^1.0.26-2",
-    "through2": "^0.4.1"
+    "through2": "^0.4.1",
+    "geojson-stream": "0.0.0"
   },
   "devDependencies": {
     "glob": "~3.2.9",
