@@ -51,8 +51,8 @@ Downloader.prototype._read = function () {
             self.maxRecords = data.features.length;
         }
         if (data.exceededTransferLimit || data.features.length === self.maxRecords) {
-          // If we get back the maximum number of results, break the
-          // bbox up into 4 smaller chunks and request those.
+            // If we get back the maximum number of results, break the
+            // bbox up into 4 smaller chunks and request those.
             splitBbox(bounds).forEach(function (subbox) {
                 self.paths.push(subbox);
             });
