@@ -13,7 +13,7 @@ function Downloader(url, metadata) {
     this.baseUrl = url;
     this.paths = [metadata.extent];
     this.inProgress = 0;
-    this.maxRecords = metadata.maxRecordCount || 1000;
+    this.maxRecords = metadata.maxRecordCount || null;
     this.set = new ESet();
     this.oidField = findOidField(metadata.fields).name;
 }
@@ -44,9 +44,15 @@ Downloader.prototype._read = function () {
         if (error || response.statusCode !== 200) {
             return self.emit(error);
         }
+        if (self.maxRecords === null && self.inProgress === 1) {
+            // Since we can't reliably get the configured maximum result size from the server,
+            // assume that the first request will exceed it and use the results length
+            // to set the maxRecords value for further requests.
+            self.maxRecords = data.features.length;
+        }
         if (data.exceededTransferLimit || data.features.length === self.maxRecords) {
-          // If we get back the maximum number of results, break the
-          // bbox up into 4 smaller chunks and request those.
+            // If we get back the maximum number of results, break the
+            // bbox up into 4 smaller chunks and request those.
             splitBbox(bounds).forEach(function (subbox) {
                 self.paths.push(subbox);
             });
