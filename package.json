@@ -23,7 +23,8 @@
     "es6-set": "0.1.0",
     "readable-stream": "^1.0.26-2",
     "through2": "^0.4.1",
-    "geojson-stream": "0.0.0"
+    "geojson-stream": "0.0.0",
+    "terraformer-arcgis-parser": "~1.0.4"
   },
   "devDependencies": {
     "glob": "~3.2.9",
