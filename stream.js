@@ -29,21 +29,24 @@ Downloader.prototype._read = function () {
     }
     self.inProgress++;
     var queryString = {
-        geometry: [bounds.xmin, bounds.ymin, bounds.xmax, bounds.ymax].join(','),
+        geometry: encodeURIComponent([bounds.xmin, bounds.ymin, bounds.xmax, bounds.ymax].join(',')),
         geometryType: 'esriGeometryEnvelope',
         spatialRel: 'esriSpatialRelIntersects',
         geometryPrecision: 7,
         returnGeometry: true,
         outSR: 4326,
         outFields: '*',
-        f: 'JSON'
+        f: 'json'
     };
     var fullUrl = this.baseUrl + '/query';
 
     request.get({url: fullUrl, qs: queryString, json: true}, function (error, response, data) {
         if (error || response.statusCode !== 200) {
-            return self.emit(error);
+            return self.emit('error', error);
+        } else if (data && data.error) {
+            return self.emit('error', new Error(JSON.stringify(data.error)));
         }
+
         if (self.maxRecords === null && self.inProgress === 1) {
             // Since we can't reliably get the configured maximum result size from the server,
             // assume that the first request will exceed it and use the results length
