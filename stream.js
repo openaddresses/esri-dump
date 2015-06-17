@@ -3,7 +3,6 @@ var Readable = require('readable-stream').Readable;
 var util = require('util');
 var ESet = require('es6-set');
 var request = require('request');
-module.exports = Downloader;
 util.inherits(Downloader, Readable);
 
 function Downloader(url, metadata) {
@@ -27,6 +26,7 @@ Downloader.prototype._read = function () {
         }
         return;
     }
+
     self.inProgress++;
     var queryString = {
         geometry: encodeURIComponent([bounds.xmin, bounds.ymin, bounds.xmax, bounds.ymax].join(',')),
@@ -93,3 +93,8 @@ function findOidField(fields) {
         return (field.type === 'esriFieldTypeOID');
     })[0];
 }
+
+
+module.exports = Downloader;
+module.exports.splitBbox = splitBbox;
+module.exports.findOidField = findOidField;
