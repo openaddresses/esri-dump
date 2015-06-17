@@ -2,38 +2,16 @@
 var through = require('through2').obj;
 var request = require('request');
 var Downloader = require('./stream');
+var ArcGIS = require('terraformer-arcgis-parser');
 module.exports = function (url) {
     var geomType;
     var out = through(function (feature, _, callback) {
         var s = this;
-        if (geomType === 'esriGeometryPolygon') {
-            s.push({
-                type: 'Feature',
-                properties: feature.attributes,
-                geometry: {
-                    type: 'Polygon',
-                    coordinates: feature.geometry.rings,
-                }
-            });
-        } else if (geomType === 'esriGeometryPolyline') {
-            s.push({
-                type: 'Feature',
-                properties: feature.attributes,
-                geometry: {
-                    type: 'MultiLineString',
-                    coordinates: feature.geometry.paths,
-                }
-            });
-        } else if (geomType === 'esriGeometryPoint') {
-            s.push({
-                type: 'Feature',
-                properties: feature.attributes,
-                geometry: {
-                    type: 'Point',
-                    coordinates: [feature.geometry.x, feature.geometry.y]
-                }
-            });
-        }
+        s.push({
+            type: 'Feature',
+            properties: feature.attributes,
+            geometry: ArcGIS.parse(feature.geometry)
+        });
         callback();
     });
     request.get({ url: url, qs: {f: 'json'}, json: true }, function (error, response, metadata) {
