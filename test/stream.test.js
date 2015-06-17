@@ -62,3 +62,25 @@ test('stream#splitBbox', function(t) {
         ], 'returns split bbox');
     t.end();
 });
+
+test('stream#findOidField', function(t){
+    t.deepEquals(stream.findOidField([{
+        name: 'test',
+        type: 'esriFieldTypeOID',
+        alias: 'st_length(shape)',
+        domain: null
+    }]), {
+        alias: 'st_length(shape)',
+        domain: null,
+        name: 'test',
+        type: 'esriFieldTypeOID'
+    }, 'Find Oid Field');
+
+    t.deepEquals(stream.findOidField([{
+        name: 'test',
+        type: 'esriTypeDouble',
+        alias: 'st_length(shape)',
+        domain: null
+    }]), undefined, 'Can\'t Find Oid Field');
+    t.end();
+});
