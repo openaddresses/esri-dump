@@ -11,7 +11,7 @@ This is based on [Python code](http://github.com/iandees/esri-dump) @iandees wro
 
 ## API
 
-exposes a function, which if you give it a url, will return a stream of the geojson/image features.
+exposes a function, which if you give it a url, will return a stream of the geojson features.
 
 ```js
 var esriDump = require("esri-dump");
@@ -23,8 +23,8 @@ var featureCollection = {
 jsonStream.on('type', function(type) {
     //Emitted before any data events
     //emits one of
-    // - `MapServer` (geojson)
-    // - 'ImageServer' (imagejson)
+    // - `MapServer'
+    // - 'ImageServer'
 });
 
 jsonStream.on('data', function (feature) {
@@ -42,7 +42,7 @@ jsonStream.on('error', function (err) {
 
 ## Command Line
 
-Streams a geojson/image feature collection to stdout
+Streams a geojson feature collection to stdout
 
 ```sh
 esri-dump http://services2.bhamaps.com/arcgis/rest/services/AGS_jackson_co_il_taxmap/MapServer/0 > output.geojson
@@ -93,40 +93,60 @@ Output from an ESRI `MapServer` is retured as GeoJSON like the example below.
 
 ### ImageServer
 
-Output from an ESRI `ImageServer` is returned in a modified GeoJSON format like the example below.
+Output from an ESRI `ImageServer` is returned as GeoJSON extends for the image like in the example below.
+Each GeoJSON feature will include an `id` in the properties which refers to its Raster ID from the server.
+It will also include a `files` array which will contain the URL of the image as well as additional metadata.
 
 ```json
 {
     "type": "FeatureCollection",
     "features": [
         {
-            "type": "Image",
+            "type": "Feature",
             "properties": {
-                "id": 1
-            },
-            "feature": [
-                {
-                    "type": "ImageData",
-                    "file": {
+                "id": 1,
+                "files": [
+                    {
                         "url": "http://example.com/image.tif",
                         "name": "image.tif"
-                    }
-                },
-                {
-                    "type": "ImageData",
-                    "file": {
+                    },
+                    {
                         "url": "http://example.com/image.tif.ovr",
                         "name": "image.tif.ovr"
-                    }
-                },
-                {
-                    "type": "ImageData",
-                    "file": {
+                    },
+                    {
                         "url": "http://example.com/image.tif.aux.xml",
                         "name": "image.tif.aux.xml"
                     }
-                }
-            ]
+                ]
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -116.12798172618578,
+                            44.99864757152258
+                        ],
+                        [
+                            -116.12698194645195,
+                            45.06444365118384
+                        ],
+                        [
+                            -116.0595423622439,
+                            45.06390817866521
+                        ],
+                        [
+                            -116.06061934720236,
+                            44.99811331869774
+                        ],
+                        [
+                            -116.12798172618578,
+                            44.99864757152258
+                        ]
+                    ]
+                ]
+            }
         }
     ]
 }

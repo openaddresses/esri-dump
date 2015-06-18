@@ -1,0 +1,25 @@
+{
+    "rasterFiles": [
+        {
+            "id": "http://localhost:3000/image.tif",
+            "size": 621175109,
+            "rasterIds": [
+                1
+            ]
+        },
+        {
+            "id": "http://localhost:3000/image.tif.ovr",
+            "size": 55929330,
+            "rasterIds": [
+                1
+            ]
+        },
+        {
+            "id": "http://localhost:3000/image.tif.aux.xml",
+            "size": 9634,
+            "rasterIds": [
+                1
+            ]
+        }
+    ]
+}

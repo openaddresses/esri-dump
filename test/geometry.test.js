@@ -1,3 +1,4 @@
+'use strict';
 var test = require('tape');
 var fs = require('fs');
 var geometry = require('../lib/geometry.js');
