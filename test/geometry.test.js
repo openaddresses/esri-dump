@@ -1,9 +1,9 @@
 var test = require('tape');
 var fs = require('fs');
-var stream = require('../stream');
+var geometry = require('../lib/geometry.js');
 
-test('stream#splitBbox', function(t) {
-   t.deepEquals(stream.splitBbox({
+test('geometry#splitBbox', function(t) {
+   t.deepEquals(geometry.splitBbox({
         xmin: -97.0189932385465,
         ymin: 20.52053000026018,
         xmax: -88.57449931419137,
@@ -32,7 +32,7 @@ test('stream#splitBbox', function(t) {
            }
        ], 'returns split bbox');
 
-   t.deepEquals(stream.splitBbox({
+   t.deepEquals(geometry.splitBbox({
         xmin: 2,
         ymin: 2,
         xmax: 4,
@@ -63,8 +63,8 @@ test('stream#splitBbox', function(t) {
     t.end();
 });
 
-test('stream#findOidField', function(t){
-    t.deepEquals(stream.findOidField([{
+test('geometry#findOidField', function(t){
+    t.deepEquals(geometry.findOidField([{
         name: 'test',
         type: 'esriFieldTypeOID',
         alias: 'st_length(shape)',
@@ -76,7 +76,7 @@ test('stream#findOidField', function(t){
         type: 'esriFieldTypeOID'
     }, 'Find Oid Field');
 
-    t.deepEquals(stream.findOidField([{
+    t.deepEquals(geometry.findOidField([{
         name: 'test',
         type: 'esriTypeDouble',
         alias: 'st_length(shape)',

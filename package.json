@@ -14,16 +14,18 @@
     "esri-dump": "cli.js"
   },
   "main": "index.js",
-  "license": "BSD",
+  "license": "MIT",
   "engines": {
     "node": ">=0.8"
   },
   "dependencies": {
-    "request": "^2.34.0",
+    "JSONStream": "^1.0.4",
     "es6-set": "0.1.0",
+    "geojson-stream": "0.0.0",
+    "queue-async": "^1.0.7",
     "readable-stream": "^1.0.26-2",
-    "through2": "^0.4.1",
-    "geojson-stream": "0.0.0"
+    "request": "^2.34.0",
+    "through2": "^0.4.1"
   },
   "devDependencies": {
     "glob": "~3.2.9",
