@@ -2,6 +2,7 @@
 var through = require('through2').obj;
 var request = require('request');
 var Downloader = require('./stream');
+var rings2geojson = require('./rings2geojson');
 module.exports = function (url) {
     var geomType;
     var out = through(function (feature, _, callback) {
@@ -10,10 +11,7 @@ module.exports = function (url) {
             s.push({
                 type: 'Feature',
                 properties: feature.attributes,
-                geometry: {
-                    type: 'Polygon',
-                    coordinates: feature.geometry.rings,
-                }
+                geometry: rings2geojson(feature.geometry.rings)
             });
         } else if (geomType === 'esriGeometryPolyline') {
             s.push({
