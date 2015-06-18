@@ -17,7 +17,7 @@ module.exports = function (url) {
 
         //Mapservers => Vector features => geojson
         if (url.indexOf('/MapServer') > -1 ) {
-            out.emit('type', 'geometry');
+            out.emit('type', 'MapServer');
             if (metadata.capabilities && metadata.capabilities.indexOf('Query') === -1 ) {
                 return out.emit('error', new Error('Layer doesn\'t support query operation.'));
             }
@@ -35,7 +35,7 @@ module.exports = function (url) {
 
         //ImageServer => Rasterdata
         } else if (url.indexOf('/ImageServer') > -1 ) {
-            out.emit('type', 'image');
+            out.emit('type', 'ImageServer');
             if (metadata.capabilities && metadata.capabilities.indexOf('Download') === -1 ) {
                 return out.emit('error', new Error('Layer doesn\'t support download operation.'));
             }

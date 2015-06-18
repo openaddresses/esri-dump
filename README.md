@@ -20,12 +20,21 @@ var featureCollection = {
   type: 'FeatureCollection',
   features: []
 }
+jsonStream.on('type', function(type) {
+    //Emitted before any data events
+    //emits one of
+    // - `MapServer` (geojson)
+    // - 'ImageServer' (imagejson)
+});
+
 jsonStream.on('data', function (feature) {
     featureCollection.features.push(feature);
 });
+
 jsonStream.on('end', function () {
     doSomething(null, featureCollection)
 });
+
 jsonStream.on('error', function (err) {
     doSomething(err);
 });
