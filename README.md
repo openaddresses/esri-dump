@@ -93,7 +93,7 @@ Output from an ESRI `MapServer` is retured as GeoJSON like the example below.
 
 ### ImageServer
 
-Output from an ESRI `ImageServer` is returned as GeoJSON extends for the image like in the example below.
+Output from an ESRI `ImageServer` is returned as GeoJSON extents for the image like in the example below.
 Each GeoJSON feature will include an `id` in the properties which refers to its Raster ID from the server.
 It will also include a `files` array which will contain the URL of the image as well as additional metadata.
 
