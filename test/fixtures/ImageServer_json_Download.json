@@ -1,0 +1,260 @@
+{
+    "currentVersion": 10.3,
+    "serviceDescription": "Lots of words",
+    "name": "image/images",
+    "description": "Even more words",
+    "extent": {
+        "xmin": 2240369.8233000003,
+        "ymin": 1192725.063299999,
+        "xmax": 2748620.3233000003,
+        "ymax": 1987830.063299999,
+        "spatialReference": {
+            "wkid": 102605,
+            "latestWkid": 102605
+        }
+    },
+    "initialExtent": {
+        "xmin": 2240369.8233000003,
+        "ymin": 1192725.063299999,
+        "xmax": 2748620.3233000003,
+        "ymax": 1987830.063299999,
+        "spatialReference": {
+            "wkid": 102605,
+            "latestWkid": 102605
+        }
+    },
+    "fullExtent": {
+        "xmin": 2240369.8233000003,
+        "ymin": 1192725.063299999,
+        "xmax": 2748620.3233000003,
+        "ymax": 1987830.063299999,
+        "spatialReference": {
+            "wkid": 102605,
+            "latestWkid": 102605
+        }
+    },
+    "pixelSizeX": 0.5,
+    "pixelSizeY": 0.5,
+    "bandCount": 4,
+    "pixelType": "U8",
+    "minPixelSize": 0,
+    "maxPixelSize": 0,
+    "copyrightText": "Lawyers :/",
+    "serviceDataType": "esriImageServiceDataTypeGeneric",
+    "minValues": [
+        15,
+        28,
+        38,
+        4
+    ],
+    "maxValues": [
+        248,
+        248,
+        246,
+        238
+    ],
+    "meanValues": [
+        123.41572786850693,
+        127.70524268237573,
+        114.37285365465922,
+        116.39141229657389
+    ],
+    "stdvValues": [
+        43.602364971748756,
+        34.16795615629869,
+        30.46078238260486,
+        27.60464799718197
+    ],
+    "objectIdField": "OBJECTID",
+    "fields": [
+        {
+            "name": "OBJECTID",
+            "type": "esriFieldTypeOID",
+            "alias": "OBJECTID",
+            "domain": null
+        },
+        {
+            "name": "Shape",
+            "type": "esriFieldTypeGeometry",
+            "alias": "Shape",
+            "domain": null
+        },
+        {
+            "name": "Name",
+            "type": "esriFieldTypeString",
+            "alias": "Name",
+            "domain": null,
+            "length": 50
+        },
+        {
+            "name": "MinPS",
+            "type": "esriFieldTypeDouble",
+            "alias": "MinPS",
+            "domain": null
+        },
+        {
+            "name": "MaxPS",
+            "type": "esriFieldTypeDouble",
+            "alias": "MaxPS",
+            "domain": null
+        },
+        {
+            "name": "LowPS",
+            "type": "esriFieldTypeDouble",
+            "alias": "LowPS",
+            "domain": null
+        },
+        {
+            "name": "HighPS",
+            "type": "esriFieldTypeDouble",
+            "alias": "HighPS",
+            "domain": null
+        },
+        {
+            "name": "Category",
+            "type": "esriFieldTypeInteger",
+            "alias": "Category",
+            "domain": {
+                "type": "codedValue",
+                "name": "MosaicCatalogItemCategoryDomain",
+                "codedValues": [
+                    {
+                        "name": "Unknown",
+                        "code": 0
+                    },
+                    {
+                        "name": "Primary",
+                        "code": 1
+                    },
+                    {
+                        "name": "Overview",
+                        "code": 2
+                    },
+                    {
+                        "name": "Unprocessed Overview",
+                        "code": 3
+                    },
+                    {
+                        "name": "Partial Overview",
+                        "code": 4
+                    },
+                    {
+                        "name": "Uploaded",
+                        "code": 253
+                    },
+                    {
+                        "name": "Incomplete",
+                        "code": 254
+                    },
+                    {
+                        "name": "Custom",
+                        "code": 255
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Tag",
+            "type": "esriFieldTypeString",
+            "alias": "Tag",
+            "domain": null,
+            "length": 20
+        },
+        {
+            "name": "GroupName",
+            "type": "esriFieldTypeString",
+            "alias": "GroupName",
+            "domain": null,
+            "length": 50
+        },
+        {
+            "name": "ProductName",
+            "type": "esriFieldTypeString",
+            "alias": "ProductName",
+            "domain": null,
+            "length": 50
+        },
+        {
+            "name": "CenterX",
+            "type": "esriFieldTypeDouble",
+            "alias": "CenterX",
+            "domain": null
+        },
+        {
+            "name": "CenterY",
+            "type": "esriFieldTypeDouble",
+            "alias": "CenterY",
+            "domain": null
+        },
+        {
+            "name": "ZOrder",
+            "type": "esriFieldTypeInteger",
+            "alias": "ZOrder",
+            "domain": null
+        },
+        {
+            "name": "Shape_Length",
+            "type": "esriFieldTypeDouble",
+            "alias": "Shape_Length",
+            "domain": null
+        },
+        {
+            "name": "Shape_Area",
+            "type": "esriFieldTypeDouble",
+            "alias": "Shape_Area",
+            "domain": null
+        }
+    ],
+    "capabilities": "Catalog,Mensuration,Download,Image,Metadata",
+    "defaultMosaicMethod": "Northwest",
+    "allowedMosaicMethods": "NorthWest,Center,LockRaster,ByAttribute,Nadir,Viewpoint,Seamline,None",
+    "sortField": "",
+    "sortValue": null,
+    "mosaicOperator": "First",
+    "defaultCompressionQuality": 75,
+    "defaultResamplingMethod": "Bilinear",
+    "maxImageHeight": 20000,
+    "maxImageWidth": 25000,
+    "maxRecordCount": 1000,
+    "maxDownloadImageCount": 10000,
+    "maxDownloadSizeLimit": 1000000,
+    "maxMosaicImageCount": 20,
+    "allowRasterFunction": true,
+    "rasterFunctionInfos": [
+        {
+            "name": "None",
+            "description": "A No-Op Function.",
+            "help": ""
+        },
+        {
+            "name": "False Color Composite",
+            "description": "A raster function template to display false color (4,1,2).",
+            "help": ""
+        }
+    ],
+    "rasterTypeInfos": [
+        {
+            "name": "Raster Dataset",
+            "description": "Supports all ArcGIS Raster Datasets",
+            "help": ""
+        }
+    ],
+    "mensurationCapabilities": "Basic",
+    "hasHistograms": true,
+    "hasColormap": false,
+    "hasRasterAttributeTable": false,
+    "minScale": 0,
+    "maxScale": 0,
+    "exportTilesAllowed": false,
+    "hasMultidimensions": false,
+    "supportsStatistics": true,
+    "supportsAdvancedQueries": true,
+    "editFieldsInfo": null,
+    "ownershipBasedAccessControlForRasters": null,
+    "allowComputeTiePoints": false,
+    "useStandardizedQueries": true,
+    "spatialReference": {
+        "wkid": 102605,
+        "latestWkid": 102605
+    }
+}
