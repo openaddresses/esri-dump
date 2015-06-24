@@ -28,7 +28,7 @@ module.exports = function (url) {
             } else if (!metadata.extent) {
                 return out.emit('error', new Error('Layer doesn\'t list an extent.'));
             } else if ('subLayers' in metadata && metadata.subLayers.length > 0) {
-                return out.emit('error', 'Specified layer has sublayers.');
+                return out.emit('error', new Error('Specified layer has sublayers.'));
             }
 
             new Geometry(url, metadata).pipe(out);
