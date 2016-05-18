@@ -27,8 +27,9 @@
     "through2": "^0.4.1"
   },
   "devDependencies": {
+    "geojsonhint": "^1.2.0",
     "glob": "~3.2.9",
-    "tape": "~2.10.2",
-    "tap": "~0.4.8"
+    "tap": "~0.4.8",
+    "tape": "~2.10.2"
   }
 }

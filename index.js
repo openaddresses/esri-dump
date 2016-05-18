@@ -19,7 +19,8 @@ module.exports = function (url) {
         }
 
         switch (resourceType) {
-          case '/FeatureServer' || '/MapServer':
+          case '/FeatureServer':
+          case '/MapServer':
 
             resourceType === '/FeatureServer' ? out.emit('type', 'FeatureServer') : out.emit('type', 'MapServer');
             if (metadata.capabilities && metadata.capabilities.indexOf('Query') === -1 ) {
