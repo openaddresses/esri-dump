@@ -10,14 +10,18 @@ module.exports = function (url) {
         callback();
     });
 
+    // Extract API resource type from url. One of FeatureServer, MapServer, or ImageServer
+    var resourceType = url.substring(url.lastIndexOf('/', url.lastIndexOf('/') - 1), url.lastIndexOf('/'));
+
     request.get({ url: url, qs: {f: 'json'}, json: true }, function (error, response, metadata) {
         if (error || response.statusCode !== 200) {
             return out.emit('error', error);
         }
 
-        //Mapservers => Vector features => geojson
-        if (url.indexOf('/MapServer') > -1 ) {
-            out.emit('type', 'MapServer');
+        switch (resourceType) {
+          case '/FeatureServer' || '/MapServer':
+
+            resourceType === '/FeatureServer' ? out.emit('type', 'FeatureServer') : out.emit('type', 'MapServer');
             if (metadata.capabilities && metadata.capabilities.indexOf('Query') === -1 ) {
                 return out.emit('error', new Error('Layer doesn\'t support query operation.'));
             }
@@ -33,17 +37,23 @@ module.exports = function (url) {
 
             new Geometry(url, metadata).pipe(out);
 
-        //ImageServer => Rasterdata
-        } else if (url.indexOf('/ImageServer') > -1 ) {
+            break;
+
+          case '/ImageServer':
+
             out.emit('type', 'ImageServer');
             if (metadata.capabilities && metadata.capabilities.indexOf('Download') === -1 ) {
                 return out.emit('error', new Error('Layer doesn\'t support download operation.'));
             }
 
             new Imagery_raw(url, metadata).pipe(out);
-        } else {
+
+            break;
+
+          default:
             return out.emit('error', new Error('Could not determine server type'));
         }
+
     });
 
     return out;
