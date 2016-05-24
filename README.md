@@ -50,9 +50,9 @@ esri-dump http://services2.bhamaps.com/arcgis/rest/services/AGS_jackson_co_il_ta
 
 ## Data Output
 
-### MapServer
+### FeatureServer and MapServer
 
-Output from an ESRI `MapServer` is retured as GeoJSON like the example below.
+Output from an ESRI `FeatureServer` or an ESRI `MapServer` is returned as GeoJSON like the example below.
 
 ```json
 {

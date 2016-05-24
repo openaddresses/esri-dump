@@ -65,23 +65,40 @@ test('geometry#splitBbox', function(t) {
 });
 
 test('geometry#findOidField', function(t){
-    t.deepEquals(geometry.findOidField([{
+    t.equals(geometry.findOidField([{
         name: 'test',
         type: 'esriFieldTypeOID',
         alias: 'st_length(shape)',
         domain: null
-    }]), {
-        alias: 'st_length(shape)',
-        domain: null,
-        name: 'test',
-        type: 'esriFieldTypeOID'
-    }, 'Find Oid Field');
+    }]), 'test', 'Find Oid Field');
 
-    t.deepEquals(geometry.findOidField([{
+    t.equals(geometry.findOidField([{
+        name: 'id',
+        type: 'esriTypeDouble',
+        alias: 'st_length(shape)',
+        domain: null
+    }]), 'id', 'Finds a suitable ID field');
+
+    t.equals(geometry.findOidField([{
+        name: 'id',
+        type: 'esriTypeDouble',
+        alias: 'st_length(shape)',
+        domain: null
+    },{
+        name: 'objectid',
+        type: 'esriTypeString',
+        alias: 'st_length(shape)',
+        domain: null
+    }]), 'objectid', 'Finds the best available ID field');
+
+    t.throws(function() {
+      geometry.findOidField([{
         name: 'test',
         type: 'esriTypeDouble',
         alias: 'st_length(shape)',
         domain: null
-    }]), undefined, 'Can\'t Find Oid Field');
+      }])
+    }, /Could not determine OBJECTID field./, 'Recognizes absense of any likely OBJECTID field');
+
     t.end();
 });
