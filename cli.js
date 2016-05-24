@@ -12,12 +12,19 @@ if (!url) {
 var stream = esriDump(url);
 
 stream.on('type', function(type){
-    if (type === 'MapServer') {
-        //If output is set save to disk, else stream
-        stream.pipe(geojsonStream.stringify()).pipe(process.stdout);
-    } else if (type === 'ImageServer') {
+  switch (type) {
+    case 'FeatureServer':
+    case 'MapServer':
+      //If output is set save to disk, else stream
+      stream.pipe(geojsonStream.stringify()).pipe(process.stdout);
+      break;
+    case 'ImageServer':
+      //If output is set, download, else stream
+      stream.pipe(geojsonStream.stringify()).pipe(process.stdout);
+      break;
+  }
+});
 
-        //If output is set, download, else stream
-        stream.pipe(geojsonStream.stringify()).pipe(process.stdout);
-    }
+stream.on('error', function(error) {
+  throw error;
 });
