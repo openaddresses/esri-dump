@@ -8,7 +8,6 @@ var esriDump = require('./'),
 if (!url) {
     throw new Error('url required');
 }
-
 var stream = esriDump(url);
 
 stream.on('type', function(type){

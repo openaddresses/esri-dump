@@ -17,7 +17,11 @@ module.exports = function (url) {
     }
 
     // Extract API resource type from url. One of FeatureServer, MapServer, or ImageServer
-    var resourceType = url.substring(url.lastIndexOf('/', url.lastIndexOf('/') - 1), url.lastIndexOf('/'));
+    var supported = ['FeatureServer', 'MapServer', 'ImageServer'];
+    var occurrence = supported.map(function(d) {
+      return url.lastIndexOf(d);
+    });
+    var resourceType = supported[occurrence.indexOf(Math.max.apply(null, occurrence))];
 
     request.get({ url: url, qs: {f: 'json'}, json: true }, function (error, response, metadata) {
         if (error) return out.emit('error', error);
@@ -25,10 +29,10 @@ module.exports = function (url) {
         if (metadata.error) return out.emit('error', new Error('Server metadata error: ' + metadata.error.message));
 
         switch (resourceType) {
-          case '/FeatureServer':
-          case '/MapServer':
+          case 'FeatureServer':
+          case 'MapServer':
 
-            resourceType === '/FeatureServer' ? out.emit('type', 'FeatureServer') : out.emit('type', 'MapServer');
+            out.emit('type', resourceType);
             if (metadata.capabilities && metadata.capabilities.indexOf('Query') === -1 ) {
                 return out.emit('error', new Error('Layer doesn\'t support query operation.'));
             }
@@ -46,7 +50,7 @@ module.exports = function (url) {
 
             break;
 
-          case '/ImageServer':
+          case 'ImageServer':
 
             out.emit('type', 'ImageServer');
             if (metadata.capabilities && metadata.capabilities.indexOf('Download') === -1 ) {
@@ -77,7 +81,7 @@ module.exports = function (url) {
               }
               return out.emit('error', new Error(errorMessage));
             } else {
-              return out.emit('error', new Error('Could not determine server type.'));
+              return out.emit('error', new Error('Could not determine server type of ' + url));
             }
         }
 
