@@ -1,6 +1,12 @@
 language: node_js
-
 node_js:
-- 0.10
-
+- 0.1
 sudo: false
+deploy:
+  provider: npm
+  email: ian.dees@gmail.com
+  api_key:
+    secure: vgJIBfR9XbdvaK9f4TrFtst1eFtrRq4kK+nKwjGQTAA3Oul5xOCny9fzAWfbVhFZ4KTh+05MadG+9f3cUnS3YWoPEuUuaYMxLUsFlZteFUBBzUpg99apvpnA0yY5r7mBJdRBBY8ReFXpQlPLBAcaCm6m85DXrwdOyVExK8K78D4=
+  on:
+    tags: true
+    repo: openaddresses/esri-dump
