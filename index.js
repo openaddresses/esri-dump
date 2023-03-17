@@ -1,91 +1,71 @@
-'use strict';
-var through = require('through2').obj;
-var request = require('request');
-var Geometry = require('./lib/geometry');
-var Imagery_raw = require('./lib/imagery_raw');
+import Geometry from './lib/geometry.js';
+import EventEmitter from 'node:events';
 
-module.exports = function (url) {
-    var geomType;
-    var out = through(function (feature, _, callback) {
-        this.push(feature);
-        callback();
-    });
+const SUPPORTED = ['FeatureServer', 'MapServer', 'ImageServer'];
 
-    // Validate URL is a "/rest/services/" endpoint
-    if (url.indexOf('/rest/services/') === -1) {
-      return out.emit('error', new Error('Did not recognize ' + url + ' as an ArcGIS /rest/services/ endpoint.'));
+export default class EsriDump extends EventEmitter {
+    constructor(url) {
+        super();
+
+        this.url = new URL(url);
+
+        // Validate URL is a "/rest/services/" endpoint
+        if (url.pathname.indexOf('/rest/services/') === -1) throw new Error('Did not recognize ' + url + ' as an ArcGIS /rest/services/ endpoint.');
+
+        this.geomType = null;
+
+        const occurrence = SUPPORTED.map(function(d) { return url.lastIndexOf(d) });
+        this.resourceType = SUPPORTED[occurrence.indexOf(Math.max.apply(null, occurrence))];
     }
 
-    // Extract API resource type from url. One of FeatureServer, MapServer, or ImageServer
-    var supported = ['FeatureServer', 'MapServer', 'ImageServer'];
-    var occurrence = supported.map(function(d) {
-      return url.lastIndexOf(d);
-    });
-    var resourceType = supported[occurrence.indexOf(Math.max.apply(null, occurrence))];
+    async fetch() {
+        const url = new (this.url);
+        url.searchParams.append('f', 'json');
 
-    request.get({ url: url, qs: {f: 'json'}, json: true }, function (error, response, metadata) {
-        if (error) return out.emit('error', error);
-        if (response.statusCode !== 200) return out.emit('error', new Error('Received ' + response.statusCode + ' response code'));
-        if (metadata.error) return out.emit('error', new Error('Server metadata error: ' + metadata.error.message));
+        const res = await fetch(url);
 
-        switch (resourceType) {
-          case 'FeatureServer':
-          case 'MapServer':
+        if (!res.ok) this.emit('error', await res.text());
 
-            out.emit('type', resourceType);
-            if (metadata.capabilities && metadata.capabilities.indexOf('Query') === -1 ) {
-                return out.emit('error', new Error('Layer doesn\'t support query operation.'));
-            }
+        const meteadata = await res.json();
 
-            geomType = metadata.geometryType;
-            if (!geomType) {
-                return out.emit('error', new Error('no geometry'));
-            } else if (!metadata.extent) {
-                return out.emit('error', new Error('Layer doesn\'t list an extent.'));
-            } else if ('subLayers' in metadata && metadata.subLayers.length > 0) {
-                return out.emit('error', 'Specified layer has sublayers.');
-            }
-
-            new Geometry(url, metadata).pipe(out);
-
-            break;
-
-          case 'ImageServer':
-
-            out.emit('type', 'ImageServer');
-            if (metadata.capabilities && metadata.capabilities.indexOf('Download') === -1 ) {
-                return out.emit('error', new Error('Layer doesn\'t support download operation.'));
-            }
-
-            new Imagery_raw(url, metadata).pipe(out);
-
-            break;
-
-          default:
-            if (metadata.folders|| metadata.services) {
-              var errorMessage = 'Endpoint provided is not a Server resource.\n';
-              if (metadata.folders.length > 0) {
+        if (metadata.error) {
+            return this.emit('error', new Error('Server metadata error: ' + metadata.error.message));
+        } else if (metadata.capabilities && metadata.capabilities.indexOf('Query') === -1 ) {
+            return this.emit('error', new Error('Layer doesn\'t support query operation.'));
+        } else if (metadata.folders|| metadata.services) {
+            const errorMessage = 'Endpoint provided is not a Server resource.\n';
+            if (metadata.folders.length > 0) {
                 errorMessage += '\nChoose a Layer from a Service in one of these Folders: \n  '
-                  + metadata.folders.join('\n  ') + '\n';
-              }
-              if (metadata.services.length > 0) {
-                errorMessage += '\nChoose a Layer from one of these Services: \n  '
-                  + metadata.services.map(function(d) { return d.name }).join('\n  ') + '\n';
-              }
-              return out.emit('error', new Error(errorMessage));
-            } else if (metadata.layers) {
-              var errorMessage = 'Endpoint provided is not a Server resource.\n';
-              if (metadata.layers.length > 0) {
-                errorMessage += '\nChoose one of these Layers: \n  '
-                  + metadata.layers.map(function(d) { return d.name }).join('\n  ') + '\n';
-              }
-              return out.emit('error', new Error(errorMessage));
-            } else {
-              return out.emit('error', new Error('Could not determine server type of ' + url));
+                    + metadata.folders.join('\n  ') + '\n';
             }
+
+            if (metadata.services.length > 0) {
+                errorMessage += '\nChoose a Layer from one of these Services: \n  '
+                    + metadata.services.map(function(d) { return d.name }).join('\n  ') + '\n';
+            }
+
+            return this.emit('error', new Error(errorMessage));
+        } else if (metadata.layers) {
+            const errorMessage = 'Endpoint provided is not a Server resource.\n';
+            if (metadata.layers.length > 0) {
+                errorMessage += '\nChoose one of these Layers: \n  '
+                    + metadata.layers.map(function(d) { return d.name }).join('\n  ') + '\n';
+            }
+            return this.emit('error', new Error(errorMessage));
+        } else {
+            return this.emit('error', new Error('Could not determine server type of ' + url));
         }
 
-    });
+        this.geomType = metadata.geometryType;
 
-    return out;
+        if (!geomType) {
+            return this.emit('error', new Error('no geometry'));
+        } else if (!metadata.extent) {
+            return this.emit('error', new Error('Layer doesn\'t list an extent.'));
+        } else if ('subLayers' in metadata && metadata.subLayers.length > 0) {
+            return this.emit('error', new Error('Specified layer has sublayers.'));
+        }
+
+        new Geometry(url, metadata).pipe(out);
+    }
 };
