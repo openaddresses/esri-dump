@@ -6,6 +6,7 @@
     },
     "globals": {
         "Map": true,
+        "Set": true,
         "Promise": true,
         "Uint8Array": true,
         "BigInt": true

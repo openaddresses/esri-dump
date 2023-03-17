@@ -5,7 +5,8 @@
     "author": "Ian Dees <ian.dees@gmail.com>",
     "description": "Assist with pulling data out of an ESRI ArcGIS REST server into a more useful format.",
     "scripts": {
-        "test": "tape test/*.test.js"
+        "test": "tape test/*.test.js",
+        "lint": "eslint *.js test/*.js lib/*.js"
     },
     "repository": {
         "type": "git",
@@ -19,18 +20,11 @@
     "engines": {
         "node": ">=0.8"
     },
-    "dependencies": {
+    "devDependencies": {
         "eslint": "^8.36.0",
         "eslint-plugin-node": "^11.1.0",
-        "geojson-stream": "0.0.0",
-        "proj4": "^2.3.6",
-        "request": "^2.34.0",
-        "through2": "^0.4.1"
-    },
-    "devDependencies": {
         "geojsonhint": "^1.2.0",
         "glob": "~3.2.9",
-        "tap": "~0.4.8",
         "tape": "~2.10.2"
     }
 }

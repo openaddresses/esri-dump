@@ -1,22 +1,22 @@
 'use strict';
 
-var http = require('http');
-var server = http.createServer(handleRequest);
-var options;
+const http = require('http');
+const server = http.createServer(handleRequest);
+let options;
 
 if (process.argv[2] === 'start') {
     new Server({
         mode: process.argv[3]
-    }, function(){
-        console.log("Server Started");
-    });
+    }, (() =>{
+        console.log('Server Started');
+    }));
 }
 
 function Server(opts, cb) {
     if (!opts.mode) { throw new Error('options.mode must be set'); }
     options = opts;
 
-    server.listen(3000, function(){
+    server.listen(3000, () =>{
         cb(stop);
     });
 
@@ -33,7 +33,7 @@ function handleRequest(request, response) {
     if (r[request.url] && r[request.url][options.mode]) {
         response.writeHead(
             r[request.url][options.mode].code ? r[request.url][options.mode].code : 200,
-            r[request.url][options.mode].header ? r[request.url][options.mode].header : {'Content-Type': 'application/json'}
+            r[request.url][options.mode].header ? r[request.url][options.mode].header : { 'Content-Type': 'application/json' }
         );
         response.end(JSON.stringify(r[request.url][options.mode].data));
     } else {
