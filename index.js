@@ -22,6 +22,7 @@ export default class EsriDump extends EventEmitter {
         const url = new URL(this.url);
         url.searchParams.append('f', 'json');
 
+        if (process.env.DEBUG) console.log(String(url));
         const res = await fetch(url);
 
         if (!res.ok) this.emit('error', await res.text());
@@ -72,6 +73,7 @@ export default class EsriDump extends EventEmitter {
             await geom.fetch();
 
             geom.on('feature', (feature) => {
+                console.error(feature);
                 this.emit('feature', feature);
             }).on('error', (error) => {
                 this.emit('error', error);
