@@ -24,10 +24,9 @@
         "eslint": "^8.36.0",
         "eslint-plugin-node": "^11.1.0",
         "geojsonhint": "^1.2.0",
-        "glob": "~3.2.9",
-        "tape": "~2.10.2"
+        "tape": "^5.0.0"
     },
     "dependencies": {
-        "moment": "^2.29.4"
+        "minimist": "^1.2.8"
     }
 }

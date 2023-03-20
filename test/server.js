@@ -1,7 +1,8 @@
-'use strict';
+import http from 'http';
+import fs from 'fs';
 
-const http = require('http');
 const server = http.createServer(handleRequest);
+
 let options;
 
 if (process.argv[2] === 'start') {
@@ -12,7 +13,7 @@ if (process.argv[2] === 'start') {
     }));
 }
 
-function Server(opts, cb) {
+export default function Server(opts, cb) {
     if (!opts.mode) { throw new Error('options.mode must be set'); }
     options = opts;
 
@@ -25,6 +26,42 @@ function Server(opts, cb) {
 function stop(cb) {
     server.close(cb);
 }
+
+const r = {
+    '/arcgis/rest/services/images/ImageServer?f=json': {
+        download: {
+            data: JSON.parse(fs.readFileSync(new URL('./fixtures/ImageServer_json_Download.json', import.meta.url)))
+        },
+        noDownload: {
+            data: JSON.parse(fs.readFileSync(new URL('./fixtures/ImageServer_json_noDownload.json', import.meta.url)))
+        }
+    },
+    '/arcgis/rest/services/images/ImageServer/1?f=json': {
+        download: {
+            data: JSON.parse(fs.readFileSync(new URL('./fixtures/ImageServer-1_json_Download.json', import.meta.url)))
+        }
+    },
+    '/arcgis/rest/services/images/ImageServer/2?f=json': {
+        download: {
+            data: JSON.parse(fs.readFileSync(new URL('./fixtures/ImageServer-2_json_Download.json', import.meta.url)))
+        }
+    },
+    '/arcgis/rest/services/images/ImageServer/3?f=json': {
+        download: {
+            data: JSON.parse(fs.readFileSync(new URL('./fixtures/ImageServer-3_json_Download.json', import.meta.url)))
+        }
+    },
+    '/arcgis/rest/services/images/ImageServer/download?rasterIds=1&geometryType=esriGeometryEnvelope&f=json': {
+        download: {
+            data: JSON.parse(fs.readFileSync(new URL('./fixtures/ImageServer-Download-1_json_Download.json', import.meta.url)))
+        }
+    },
+    '/arcgis/rest/services/images/ImageServer/download?rasterIds=2&geometryType=esriGeometryEnvelope&f=json': {
+        download: {
+            data: JSON.parse(fs.readFileSync(new URL('./fixtures/ImageServer-Download-2_json_Download.json', import.meta.url)))
+        }
+    }
+};
 
 function handleRequest(request, response) {
     if (options.debug) {
@@ -41,40 +78,3 @@ function handleRequest(request, response) {
     }
 }
 
-var r = {
-    '/arcgis/rest/services/images/ImageServer?f=json': {
-        download: {
-            data: require('./fixtures/ImageServer_json_Download.json')
-        },
-        noDownload: {
-            data: require('./fixtures/ImageServer_json_noDownload.json')
-        }
-    },
-    '/arcgis/rest/services/images/ImageServer/1?f=json': {
-        download: {
-            data: require('./fixtures/ImageServer-1_json_Download.json')
-        }
-    },
-    '/arcgis/rest/services/images/ImageServer/2?f=json': {
-        download: {
-            data: require('./fixtures/ImageServer-2_json_Download.json')
-        }
-    },
-    '/arcgis/rest/services/images/ImageServer/3?f=json': {
-        download: {
-            data: require('./fixtures/ImageServer-3_json_Download.json')
-        }
-    },
-    '/arcgis/rest/services/images/ImageServer/download?rasterIds=1&geometryType=esriGeometryEnvelope&f=json': {
-        download: {
-            data: require('./fixtures/ImageServer-Download-1_json_Download.json')
-        }
-    },
-    '/arcgis/rest/services/images/ImageServer/download?rasterIds=2&geometryType=esriGeometryEnvelope&f=json': {
-        download: {
-            data: require('./fixtures/ImageServer-Download-2_json_Download.json')
-        }
-    }
-};
-
-module.exports = Server;

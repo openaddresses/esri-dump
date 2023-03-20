@@ -1,13 +1,24 @@
 import Geometry from './lib/geometry.js';
 import EventEmitter from 'node:events';
 
-const SUPPORTED = ['FeatureServer', 'MapServer', 'ImageServer'];
+const SUPPORTED = ['FeatureServer', 'MapServer'];
 
+/**
+ * ESRI Download Class
+ * @class
+ *
+ * @param {string} url URL of ArcGIS Server
+ * @param {object} [config] Optional Config
+ * @param {string} [config.approach=bbox] Download Approach
+ */
 export default class EsriDump extends EventEmitter {
-    constructor(url) {
+    constructor(url, config = {}) {
         super();
 
         this.url = new URL(url);
+
+        this.config = config;
+        if (!this.config.approach) this.config.approach = 'bbox';
 
         // Validate URL is a "/rest/services/" endpoint
         if (!this.url.pathname.includes('/rest/services/')) throw new Error('Did not recognize ' + url + ' as an ArcGIS /rest/services/ endpoint.');
@@ -16,6 +27,8 @@ export default class EsriDump extends EventEmitter {
 
         const occurrence = SUPPORTED.map((d) => { return url.lastIndexOf(d); });
         this.resourceType = SUPPORTED[occurrence.indexOf(Math.max.apply(null, occurrence))];
+
+        this.emit('type', this.resourceType);
     }
 
     async fetch() {
@@ -69,7 +82,7 @@ export default class EsriDump extends EventEmitter {
 
         try {
             const geom = new Geometry(this.url, metadata);
-            geom.fetch();
+            geom.fetch(this.config.approach);
 
             geom.on('feature', (feature) => {
                 this.emit('feature', feature);

@@ -14,28 +14,32 @@ This is based on [Python code](http://github.com/iandees/esri-dump) @iandees wro
 exposes a function, which if you give it a url, will return a stream of the geojson features.
 
 ```js
-var esriDump = require("esri-dump");
-var jsonStream = esriDump(url);
-var featureCollection = {
+import EsriDump from 'esri-dump';
+const esri = new EsriDump(url);
+
+const  featureCollection = {
   type: 'FeatureCollection',
   features: []
 }
-jsonStream.on('type', function(type) {
+
+esri.fetch();
+
+esri.on('type', (type) => {
     //Emitted before any data events
     //emits one of
     // - `MapServer'
-    // - 'ImageServer'
+    // - `FeatureServer'
 });
 
-jsonStream.on('data', function (feature) {
+esri.on('feature', (feature) => {
     featureCollection.features.push(feature);
 });
 
-jsonStream.on('end', function () {
+esri.on('done', () => {
     doSomething(null, featureCollection)
 });
 
-jsonStream.on('error', function (err) {
+esri.on('error', (err) => {
     doSomething(err);
 });
 ```
@@ -82,67 +86,6 @@ Output from an ESRI `FeatureServer` or an ESRI `MapServer` is returned as GeoJSO
                         [
                             -65.6231319,
                             31.7127058
-                        ]
-                    ]
-                ]
-            }
-        }
-    ]
-}
-```
-
-### ImageServer
-
-Output from an ESRI `ImageServer` is returned as GeoJSON extents for the image like in the example below.
-Each GeoJSON feature will include an `id` in the properties which refers to its Raster ID from the server.
-It will also include a `files` array which will contain the URL of the image as well as additional metadata.
-
-```json
-{
-    "type": "FeatureCollection",
-    "features": [
-        {
-            "type": "Feature",
-            "properties": {
-                "id": 1,
-                "files": [
-                    {
-                        "url": "http://example.com/image.tif",
-                        "name": "image.tif"
-                    },
-                    {
-                        "url": "http://example.com/image.tif.ovr",
-                        "name": "image.tif.ovr"
-                    },
-                    {
-                        "url": "http://example.com/image.tif.aux.xml",
-                        "name": "image.tif.aux.xml"
-                    }
-                ]
-            },
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -116.12798172618578,
-                            44.99864757152258
-                        ],
-                        [
-                            -116.12698194645195,
-                            45.06444365118384
-                        ],
-                        [
-                            -116.0595423622439,
-                            45.06390817866521
-                        ],
-                        [
-                            -116.06061934720236,
-                            44.99811331869774
-                        ],
-                        [
-                            -116.12798172618578,
-                            44.99864757152258
                         ]
                     ]
                 ]
