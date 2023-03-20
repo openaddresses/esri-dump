@@ -10,7 +10,7 @@ const esri = new EsriDump(url);
 esri.on('error', (err) => {
     throw err;
 }).on('feature', (feature) => {
-    console.error(feature);
+    console.log(JSON.stringify(feature));
 });
 
 await esri.fetch();
