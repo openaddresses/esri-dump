@@ -26,5 +26,8 @@
         "geojsonhint": "^1.2.0",
         "glob": "~3.2.9",
         "tape": "~2.10.2"
+    },
+    "dependencies": {
+        "moment": "^2.29.4"
     }
 }
