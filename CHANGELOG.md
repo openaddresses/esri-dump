@@ -10,6 +10,11 @@
 
 ## Version History
 
+### v3.0.0
+
+- :rocket: Migrate library to TypeScript
+- :tada: Add support for `params` and `headers` properties in initial config
+
 ### v2.0.0
 
 - :tada: Rewrite as ES Module
