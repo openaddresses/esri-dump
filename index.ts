@@ -1,24 +1,48 @@
 import Geometry from './lib/geometry.js';
+import Fetch from './lib/fetch.js';
 import EventEmitter from 'node:events';
+import { Feature } from 'geojson';
 
 const SUPPORTED = ['FeatureServer', 'MapServer'];
 
-/**
- * ESRI Download Class
- * @class
- *
- * @param {string} url URL of ArcGIS Server
- * @param {object} [config] Optional Config
- * @param {string} [config.approach=bbox] Download Approach
- */
+export enum EsriDumpConfigApproach {
+    BBOX = 'bbox',
+    ITER = 'iter'
+}
+
+export enum EsriResourceType {
+    FeatureServer = 'FeatureServer',
+    MapServer = 'MapServer'
+}
+
+export interface EsriDumpConfigInput {
+    approach?: EsriDumpConfigApproach;
+    headers?: { [k: string]: string; };
+    params?: { [k: string]: string; };
+}
+
+export interface EsriDumpConfig {
+    approach: EsriDumpConfigApproach;
+    headers: { [k: string]: string; };
+    params: { [k: string]: string; };
+}
+
 export default class EsriDump extends EventEmitter {
-    constructor(url, config = {}) {
+    url: URL;
+    config: EsriDumpConfig;
+    geomType: null | string;
+    resourceType: EsriResourceType;
+
+    constructor(url: string, config: EsriDumpConfigInput = {}) {
         super();
 
         this.url = new URL(url);
 
-        this.config = config;
-        if (!this.config.approach) this.config.approach = 'bbox';
+        this.config = {
+            approach: config.approach || EsriDumpConfigApproach.BBOX,
+            headers: config.headers || {},
+            params: config.params || {}
+        };
 
         // Validate URL is a "/rest/services/" endpoint
         if (!this.url.pathname.includes('/rest/services/')) throw new Error('Did not recognize ' + url + ' as an ArcGIS /rest/services/ endpoint.');
@@ -26,7 +50,10 @@ export default class EsriDump extends EventEmitter {
         this.geomType = null;
 
         const occurrence = SUPPORTED.map((d) => { return url.lastIndexOf(d); });
-        this.resourceType = SUPPORTED[occurrence.indexOf(Math.max.apply(null, occurrence))];
+        const known = SUPPORTED[occurrence.indexOf(Math.max.apply(null, occurrence))];
+        if (known === 'MapServer') this.resourceType = EsriResourceType.MapServer;
+        else if (known === 'FeatureServer') this.resourceType = EsriResourceType.FeatureServer;
+        else throw new Error('Unknown or unsupported ESRI URL Format');
 
         this.emit('type', this.resourceType);
     }
@@ -36,11 +63,12 @@ export default class EsriDump extends EventEmitter {
         url.searchParams.append('f', 'json');
 
         if (process.env.DEBUG) console.error(String(url));
-        const res = await fetch(url);
+        const res = await Fetch(this.config, url);
 
         if (!res.ok) this.emit('error', await res.text());
 
-        const metadata = await res.json();
+        // TODO: Type Defs
+        const metadata: any = await res.json();
 
         if (metadata.error) {
             return this.emit('error', new Error('Server metadata error: ' + metadata.error.message));
@@ -53,17 +81,17 @@ export default class EsriDump extends EventEmitter {
                     + metadata.folders.join('\n  ') + '\n';
             }
 
-            if (metadata.services.length > 0) {
+            if (metadata.services.length > 0 && Array.isArray(metadata.services)) {
                 errorMessage += '\nChoose a Layer from one of these Services: \n  '
-                    + metadata.services.map((d) => { return d.name; }).join('\n  ') + '\n';
+                    + metadata.services.map((d: any) => { return d.name; }).join('\n  ') + '\n';
             }
 
             return this.emit('error', new Error(errorMessage));
         } else if (metadata.layers) {
             let errorMessage = 'Endpoint provided is not a Server resource.\n';
-            if (metadata.layers.length > 0) {
+            if (metadata.layers.length > 0 && Array.isArray(metadata.layers)) {
                 errorMessage += '\nChoose one of these Layers: \n  '
-                    + metadata.layers.map((d) => { return d.name; }).join('\n  ') + '\n';
+                    + metadata.layers.map((d: any) => { return d.name; }).join('\n  ') + '\n';
             }
             return this.emit('error', new Error(errorMessage));
         } else if (!this.resourceType) {
@@ -82,11 +110,11 @@ export default class EsriDump extends EventEmitter {
 
         try {
             const geom = new Geometry(this.url, metadata);
-            geom.fetch(this.config.approach);
+            geom.fetch(this.config);
 
-            geom.on('feature', (feature) => {
+            geom.on('feature', (feature: Feature) => {
                 this.emit('feature', feature);
-            }).on('error', (error) => {
+            }).on('error', (error: Error) => {
                 this.emit('error', error);
             }).on('done', () => {
                 this.emit('done');

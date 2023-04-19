@@ -1,12 +1,37 @@
 import EventEmitter from 'node:events';
 import rings2geojson from './rings2geojson.js';
+import Fetch from './fetch.js';
+import { Feature } from 'geojson';
+import {
+    EsriDumpConfig,
+    EsriDumpConfigApproach
+} from '../index.js';
+
+interface Field {
+    name: string;
+    type: string;
+}
+
+interface Path {
+    xmin: number;
+    ymin: number;
+    xmax: number;
+    ymax: number;
+}
 
 export default class Geometry extends EventEmitter {
-    constructor(url, metadata) {
+    baseUrl: URL;
+    geomType: string;
+    maxRecords: null | number;
+    set: Set<number>;
+    oidField: string;
+    paths: Path[]
+
+    constructor(url: URL, metadata: any) {
         super();
 
         this.baseUrl = url;
-        this.paths = [metadata.extent];
+        this.paths = [metadata.extent as Path];
 
         this.geomType = metadata.geometryType;
         this.maxRecords = metadata.maxRecordCount || null;
@@ -14,17 +39,17 @@ export default class Geometry extends EventEmitter {
         this.oidField = Geometry.findOidField(metadata.fields);
     }
 
-    async fetch(approach = 'bbox') {
+    async fetch(config: EsriDumpConfig) {
         try {
-            if (approach === 'bbox') await this.fetch_bbox();
-            else if (approach === 'iter') await this.fetch_iter();
+            if (config.approach === EsriDumpConfigApproach.BBOX) await this.fetch_bbox(config);
+            else if (config.approach === EsriDumpConfigApproach.ITER) await this.fetch_iter(config);
             else throw new Error('Unknown Approach');
         } catch (err) {
             this.emit('error', err);
         }
     }
 
-    async fetch_iter() {
+    async fetch_iter(config: EsriDumpConfig) {
         if (!this.oidField) this.emit('error', new Error('Cannot use iter function as oidField could not be determined'));
 
         const url = new URL(String(this.baseUrl) + '/query');
@@ -33,7 +58,7 @@ export default class Geometry extends EventEmitter {
         url.searchParams.append('f', 'json');
 
         if (process.env.DEBUG) console.error(String(url));
-        const res = await fetch(url);
+        const res = await Fetch(config, url);
 
         if (!res.ok) return this.emit('error', await res.text());
 
@@ -49,18 +74,18 @@ export default class Geometry extends EventEmitter {
             const url = new URL(String(this.baseUrl) + '/query');
             url.searchParams.append('where', '1=1');
             url.searchParams.append('geometryPrecision', '7');
-            url.searchParams.append('returnGeometry', true);
+            url.searchParams.append('returnGeometry', 'true');
             url.searchParams.append('outSR', '4326');
             url.searchParams.append('outFields', '*');
             url.searchParams.append('f', 'json');
-            url.searchParams.append('resultOffset', curr);
+            url.searchParams.append('resultOffset', String(curr));
 
             let data = null;
             while (attempts <= 5) {
                 attempts++;
 
                 if (process.env.DEBUG) console.error(String(url));
-                const res = await fetch(url);
+                const res = await Fetch(config, url);
 
                 if (!res.ok) return this.emit('error', await res.text());
 
@@ -92,7 +117,7 @@ export default class Geometry extends EventEmitter {
         this.emit('done');
     }
 
-    async fetch_bbox() {
+    async fetch_bbox(config: EsriDumpConfig) {
         while (this.paths.length) {
             const bounds = this.paths.pop();
 
@@ -101,7 +126,7 @@ export default class Geometry extends EventEmitter {
             url.searchParams.append('geometryType', 'esriGeometryEnvelope');
             url.searchParams.append('spatialRel', 'esriSpatialRelIntersects');
             url.searchParams.append('geometryPrecision', '7');
-            url.searchParams.append('returnGeometry', true);
+            url.searchParams.append('returnGeometry', 'true');
             url.searchParams.append('outSR', '4326');
             url.searchParams.append('outFields', '*');
             url.searchParams.append('f', 'json');
@@ -113,7 +138,7 @@ export default class Geometry extends EventEmitter {
                 attempts++;
 
                 if (process.env.DEBUG) console.error(String(url));
-                const res = await fetch(url);
+                const res = await Fetch(config, url);
 
                 if (!res.ok) return this.emit('error', await res.text());
 
@@ -156,35 +181,35 @@ export default class Geometry extends EventEmitter {
         this.emit('done');
     }
 
-    toGeoJSON(feature) {
+    toGeoJSON(esrifeature: any): Feature {
         if (this.geomType === 'esriGeometryPolygon') {
             return {
                 type: 'Feature',
-                properties: feature.attributes,
-                geometry: rings2geojson(feature.geometry.rings)
+                properties: esrifeature.attributes,
+                geometry: rings2geojson(esrifeature.geometry.rings)
             };
         } else if (this.geomType === 'esriGeometryPolyline') {
             return {
                 type: 'Feature',
-                properties: feature.attributes,
+                properties: esrifeature.attributes,
                 geometry: {
                     type: 'MultiLineString',
-                    coordinates: feature.geometry.paths
+                    coordinates: esrifeature.geometry.paths
                 }
             };
         } else if (this.geomType === 'esriGeometryPoint') {
             return {
                 type: 'Feature',
-                properties: feature.attributes,
+                properties: esrifeature.attributes,
                 geometry: {
                     type: 'Point',
-                    coordinates: [feature.geometry.x, feature.geometry.y]
+                    coordinates: [esrifeature.geometry.x, esrifeature.geometry.y]
                 }
             };
         }
     }
 
-    static splitBbox(bbox) {
+    static splitBbox(bbox: Path): Path[] {
         const halfWidth = (bbox.xmax - bbox.xmin) / 2.0;
         const halfHeight = (bbox.ymax - bbox.ymin) / 2.0;
 
@@ -196,7 +221,7 @@ export default class Geometry extends EventEmitter {
         ];
     }
 
-    static findOidField(fields) {
+    static findOidField(fields: Field[]): string {
         const oidField = fields.filter((field) => {
             return (field.type === 'esriFieldTypeOID');
         })[0];
@@ -207,7 +232,7 @@ export default class Geometry extends EventEmitter {
             const possibleIds = ['OBJECTID', 'objectid', 'FID', 'ID', 'fid', 'id'];
             const nextBestOidField = fields.filter((field) => {
                 return (possibleIds.indexOf(field.name) > -1);
-            }).sort((a,b) => {
+            }).sort((a: Field, b: Field) => {
                 return possibleIds.indexOf(a.name) - possibleIds.indexOf(b.name);
             })[0];
             if (nextBestOidField) {

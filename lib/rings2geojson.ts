@@ -1,3 +1,5 @@
+import { Geometry } from 'geojson';
+
 /* Code from https://github.com/Esri/Terraformer
    and https://github.com/Esri/terraformer-arcgis-parser
    Copyright (c) 2013 Esri, Inc
@@ -6,7 +8,7 @@
 // Determine if polygon ring coordinates are clockwise. clockwise signifies outer ring, counter-clockwise an inner ring
 // or hole. this logic was found at http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-
 // points-are-in-clockwise-order
-function ringIsClockwise(ringToTest) {
+function ringIsClockwise(ringToTest: number[][]) {
     let total = 0,
         i = 0,
         pt1 = ringToTest[i],
@@ -22,7 +24,7 @@ function ringIsClockwise(ringToTest) {
 
 // checks if the first and last points of a ring are equal and closes the ring
 
-function closeRing(coordinates) {
+function closeRing(coordinates: number[][]): number[][] {
     if (!pointsEqual(coordinates[0], coordinates[coordinates.length - 1])) {
         coordinates.push(coordinates[0]);
     }
@@ -31,7 +33,7 @@ function closeRing(coordinates) {
 
 // checks if 2 x,y points are equal
 
-function pointsEqual(a, b) {
+function pointsEqual(a: number[], b: number[]): boolean {
     for (let i = 0; i < a.length; i++) {
         if (a[i] !== b[i]) {
             return false;
@@ -40,7 +42,7 @@ function pointsEqual(a, b) {
     return true;
 }
 
-function coordinatesContainCoordinates(outer, inner) {
+function coordinatesContainCoordinates(outer: number[][], inner: number[][]): boolean {
     const intersects = arraysIntersectArrays(outer, inner);
     const contains = coordinatesContainPoint(outer, inner[0]);
     if (!intersects && contains) {
@@ -49,7 +51,7 @@ function coordinatesContainCoordinates(outer, inner) {
     return false;
 }
 
-function coordinatesContainPoint(coordinates, point) {
+function coordinatesContainPoint(coordinates: number[][], point: number[]): boolean {
     let contains = false;
     for (let i = -1, l = coordinates.length, j = l - 1; ++i < l; j = i) {
         if (((coordinates[i][1] <= point[1] && point[1] < coordinates[j][1]) ||
@@ -61,11 +63,11 @@ function coordinatesContainPoint(coordinates, point) {
     return contains;
 }
 
-function isNumber(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
+function isNumber(n: unknown): boolean {
+    return !isNaN(parseFloat(n as string)) && isFinite(parseFloat(n as string));
 }
 
-function edgeIntersectsEdge(a1, a2, b1, b2) {
+function edgeIntersectsEdge(a1: number[], a2: number[], b1: number[], b2: number[]): boolean {
     const ua_t = (b2[0] - b1[0]) * (a1[1] - b1[1]) - (b2[1] - b1[1]) * (a1[0] - b1[0]);
     const ub_t = (a2[0] - a1[0]) * (a1[1] - b1[1]) - (a2[1] - a1[1]) * (a1[0] - b1[0]);
     const u_b = (b2[1] - b1[1]) * (a2[0] - a1[0]) - (b2[0] - b1[0]) * (a2[1] - a1[1]);
@@ -82,9 +84,12 @@ function edgeIntersectsEdge(a1, a2, b1, b2) {
     return false;
 }
 
-function arraysIntersectArrays(a, b) {
-    if (isNumber(a[0][0])) {
-        if (isNumber(b[0][0])) {
+function arraysIntersectArrays(a: number[][] | number[], b: number[][] | number[]): boolean {
+    if (Array.isArray(a[0]) && isNumber(a[0][0])) {
+        if (Array.isArray(b[0]) && isNumber(b[0][0])) {
+            a = a as number[][];
+            b = b as number[][];
+
             for (let i = 0; i < a.length - 1; i++) {
                 for (let j = 0; j < b.length - 1; j++) {
                     if (edgeIntersectsEdge(a[i], a[i + 1], b[j], b[j + 1])) {
@@ -93,6 +98,9 @@ function arraysIntersectArrays(a, b) {
                 }
             }
         } else {
+            a = a as number[]
+            b = b as number[][];
+
             for (let k = 0; k < b.length; k++) {
                 if (arraysIntersectArrays(a, b[k])) {
                     return true;
@@ -100,6 +108,8 @@ function arraysIntersectArrays(a, b) {
             }
         }
     } else {
+        a = a as number[][]
+        b = b as number[];
         for (let l = 0; l < a.length; l++) {
             if (arraysIntersectArrays(a[l], b)) {
                 return true;
@@ -113,7 +123,7 @@ function arraysIntersectArrays(a, b) {
 // used for checking for holes in arcgis rings
 // from https://github.com/Esri/terraformer-arcgis-parser/blob/master/terraformer-arcgis-parser.js#L170
 
-export default function (rings) {
+export default function (rings: number[][][]): Geometry {
     const outerRings = [];
     const holes = [];
 
