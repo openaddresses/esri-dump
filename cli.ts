@@ -27,7 +27,9 @@ const url = argv._[2];
 
 if (!url) throw new Error('url required');
 
-const esri = new EsriDump(url, argv);
+const esri = new EsriDump(url, {
+    approach: argv.approach
+});
 
 esri.on('error', (err) => {
     throw err;

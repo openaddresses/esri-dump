@@ -1,10 +1,15 @@
 import EsriDump from '../index.js';
 import test from 'tape';
+// @ts-ignore
 import geojsonhint from 'geojsonhint';
+import { Feature } from 'geojson';
 
 test('FeatureServer with points geometry', (t) => {
     const url = 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Wildfire/FeatureServer/0';
-    const data = {
+    const data: {
+        type: string,
+        features: Feature[]
+    } = {
         type: 'FeatureCollection',
         features: []
     };
@@ -38,7 +43,10 @@ test('FeatureServer with polygon geometry', (t) => {
     t.plan(2);
 
     const url = 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Wildfire/FeatureServer/2';
-    const data = {
+    const data: {
+        type: string,
+        features: Feature[]
+    } = {
         type: 'FeatureCollection',
         features: []
     };

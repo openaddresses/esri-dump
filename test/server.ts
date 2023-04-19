@@ -3,17 +3,17 @@ import fs from 'fs';
 
 const server = http.createServer(handleRequest);
 
-let options;
+let options: any;
 
 if (process.argv[2] === 'start') {
-    new Server({
+    Server({
         mode: process.argv[3]
     }, (() =>{
         console.log('Server Started');
     }));
 }
 
-export default function Server(opts, cb) {
+export default function Server(opts: any, cb: Function) {
     if (!opts.mode) { throw new Error('options.mode must be set'); }
     options = opts;
 
@@ -23,47 +23,47 @@ export default function Server(opts, cb) {
 
 }
 
-function stop(cb) {
+function stop(cb: any) {
     server.close(cb);
 }
 
-const r = {
+const r: any = {
     '/arcgis/rest/services/images/ImageServer?f=json': {
         download: {
-            data: JSON.parse(fs.readFileSync(new URL('./fixtures/ImageServer_json_Download.json', import.meta.url)))
+            data: JSON.parse(String(fs.readFileSync(new URL('./fixtures/ImageServer_json_Download.json', import.meta.url))))
         },
         noDownload: {
-            data: JSON.parse(fs.readFileSync(new URL('./fixtures/ImageServer_json_noDownload.json', import.meta.url)))
+            data: JSON.parse(String(fs.readFileSync(new URL('./fixtures/ImageServer_json_noDownload.json', import.meta.url))))
         }
     },
     '/arcgis/rest/services/images/ImageServer/1?f=json': {
         download: {
-            data: JSON.parse(fs.readFileSync(new URL('./fixtures/ImageServer-1_json_Download.json', import.meta.url)))
+            data: JSON.parse(String(fs.readFileSync(new URL('./fixtures/ImageServer-1_json_Download.json', import.meta.url))))
         }
     },
     '/arcgis/rest/services/images/ImageServer/2?f=json': {
         download: {
-            data: JSON.parse(fs.readFileSync(new URL('./fixtures/ImageServer-2_json_Download.json', import.meta.url)))
+            data: JSON.parse(String(fs.readFileSync(new URL('./fixtures/ImageServer-2_json_Download.json', import.meta.url))))
         }
     },
     '/arcgis/rest/services/images/ImageServer/3?f=json': {
         download: {
-            data: JSON.parse(fs.readFileSync(new URL('./fixtures/ImageServer-3_json_Download.json', import.meta.url)))
+            data: JSON.parse(String(fs.readFileSync(new URL('./fixtures/ImageServer-3_json_Download.json', import.meta.url))))
         }
     },
     '/arcgis/rest/services/images/ImageServer/download?rasterIds=1&geometryType=esriGeometryEnvelope&f=json': {
         download: {
-            data: JSON.parse(fs.readFileSync(new URL('./fixtures/ImageServer-Download-1_json_Download.json', import.meta.url)))
+            data: JSON.parse(String(fs.readFileSync(new URL('./fixtures/ImageServer-Download-1_json_Download.json', import.meta.url))))
         }
     },
     '/arcgis/rest/services/images/ImageServer/download?rasterIds=2&geometryType=esriGeometryEnvelope&f=json': {
         download: {
-            data: JSON.parse(fs.readFileSync(new URL('./fixtures/ImageServer-Download-2_json_Download.json', import.meta.url)))
+            data: JSON.parse(String(fs.readFileSync(new URL('./fixtures/ImageServer-Download-2_json_Download.json', import.meta.url))))
         }
     }
 };
 
-function handleRequest(request, response) {
+function handleRequest(request: any, response: any) {
     if (options.debug) {
         console.log('#', request.url);
     }

@@ -10,6 +10,8 @@ import {
 interface Field {
     name: string;
     type: string;
+    alias?: string;
+    domain?: unknown;
 }
 
 interface Path {
