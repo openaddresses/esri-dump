@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v3.0.1
+
+- :bug: Include Types Field & Build for ES
+
 ### v3.0.0
 
 - :rocket: Migrate library to TypeScript

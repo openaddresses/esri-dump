@@ -1,11 +1,12 @@
 {
     "name": "esri-dump",
     "type": "module",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "author": "Ian Dees <ian.dees@gmail.com>",
     "description": "Assist with pulling data out of an ESRI ArcGIS REST server into a more useful format.",
     "scripts": {
         "test": "ts-node-test test/",
+        "build": "tsc --build",
         "lint": "eslint *.js test/*.js lib/*.js"
     },
     "repository": {
@@ -15,7 +16,8 @@
     "bin": {
         "esri-dump": "ts-node cli.js"
     },
-    "main": "index.js",
+    "main": "dist/index.js",
+    "types": "index.ts",
     "license": "MIT",
     "engines": {
         "node": ">=18"
