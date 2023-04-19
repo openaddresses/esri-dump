@@ -5,7 +5,7 @@
     "author": "Ian Dees <ian.dees@gmail.com>",
     "description": "Assist with pulling data out of an ESRI ArcGIS REST server into a more useful format.",
     "scripts": {
-        "test": "tape test/*.test.js",
+        "test": "ts-node-test test/",
         "lint": "eslint *.js test/*.js lib/*.js"
     },
     "repository": {

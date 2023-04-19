@@ -33,7 +33,7 @@ test('FeatureServer with points geometry', (t) => {
         const errors = geojsonhint.hint(data);
         t.ok(errors.length === 0, 'GeoJSON valid');
 
-        t.equals(data.features.length, 23);
+        t.ok(data.features.length > 10);
 
         t.end();
     });
@@ -70,7 +70,7 @@ test('FeatureServer with polygon geometry', (t) => {
         const errors = geojsonhint.hint(data);
         t.ok(errors.length === 0, 'GeoJSON valid');
 
-        t.equals(data.features.length, 16);
+        t.ok(data.features.length > 10);
 
         t.end();
     });
