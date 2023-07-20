@@ -12,7 +12,7 @@ if (argv.help) {
     console.log();
     console.log('Args:');
     console.log('  --help                   Display this message');
-    console.log('  --approach [apprach]     Download Approach');
+    console.log('  --approach [approach]     Download Approach');
     console.log('             "bbox"        Download features by iterating over bboxes');
     console.log('                             slowest but most reliable approach');
     console.log('             "iter"        Iterate over OIDs');
