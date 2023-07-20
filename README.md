@@ -94,3 +94,13 @@ Output from an ESRI `FeatureServer` or an ESRI `MapServer` is returned as GeoJSO
     ]
 }
 ```
+
+# Development
+
+`esri-dump` is written in TypeScript. To compile it locally, run:
+
+```sh
+npx tsc
+```
+
+See `/dist` for the compiled code.
