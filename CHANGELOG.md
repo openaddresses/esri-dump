@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v3.1.0
+
+- :rocket: Fix ESRI Dump Bin
+
 ### v3.0.1
 
 - :bug: Include Types Field & Build for ES
