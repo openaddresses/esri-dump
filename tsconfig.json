@@ -18,7 +18,8 @@
         }
     },
     "include": [
-        "index.ts", 
+        "index.ts",
+        "cli.ts",
         "lib/**/*"
     ]
 }

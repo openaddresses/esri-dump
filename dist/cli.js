@@ -1,12 +1,10 @@
 #!/usr/bin/env node
 import EsriDump from './index.js';
 import minimist from 'minimist';
-
 const argv = minimist(process.argv, {
     string: ['approach'],
     boolean: ['help']
 });
-
 if (argv.help) {
     console.log();
     console.log('Usage:');
@@ -22,20 +20,16 @@ if (argv.help) {
     console.log();
     process.exit();
 }
-
 const url = argv._[2];
-
-if (!url) throw new Error('url required');
-
+if (!url)
+    throw new Error('url required');
 const esri = new EsriDump(url, {
     approach: argv.approach
 });
-
 esri.on('error', (err) => {
     throw err;
 }).on('feature', (feature) => {
     console.log(JSON.stringify(feature));
 });
-
 await esri.fetch();
-
+//# sourceMappingURL=cli.js.map

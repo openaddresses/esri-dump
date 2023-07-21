@@ -14,7 +14,7 @@
         "url": "git://github.com/openaddresses/esri-dump.git"
     },
     "bin": {
-        "esri-dump": "ts-node cli.js"
+        "esri-dump": "./dist/cli.js"
     },
     "main": "dist/index.js",
     "types": "index.ts",
