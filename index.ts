@@ -58,7 +58,32 @@ export default class EsriDump extends EventEmitter {
         this.emit('type', this.resourceType);
     }
 
+    async schema() {
+        const metadata = await this.#fetchMeta();
+
+        console.error(metadata);
+    }
+
     async fetch() {
+        const metadata = await this.#fetchMeta();
+
+        try {
+            const geom = new Geometry(this.url, metadata);
+            geom.fetch(this.config);
+
+            geom.on('feature', (feature: Feature) => {
+                this.emit('feature', feature);
+            }).on('error', (error: Error) => {
+                this.emit('error', error);
+            }).on('done', () => {
+                this.emit('done');
+            });
+        } catch (err) {
+            this.emit('error', err);
+        }
+    }
+
+    async #fetchMeta() {
         const url = new URL(this.url);
         url.searchParams.append('f', 'json');
 
@@ -108,19 +133,6 @@ export default class EsriDump extends EventEmitter {
             return this.emit('error', new Error('Specified layer has sublayers.'));
         }
 
-        try {
-            const geom = new Geometry(this.url, metadata);
-            geom.fetch(this.config);
-
-            geom.on('feature', (feature: Feature) => {
-                this.emit('feature', feature);
-            }).on('error', (error: Error) => {
-                this.emit('error', error);
-            }).on('done', () => {
-                this.emit('done');
-            });
-        } catch (err) {
-            this.emit('error', err);
-        }
+        return metadata;
     }
 }
