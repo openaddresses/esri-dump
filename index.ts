@@ -62,6 +62,13 @@ export default class EsriDump extends EventEmitter {
         const metadata = await this.#fetchMeta();
 
         console.error(metadata);
+
+        //ObjectID
+        //String
+        //Date
+        //Double
+        //Integer
+
     }
 
     async fetch() {
