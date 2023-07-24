@@ -10,12 +10,12 @@ function f(_: string) {
 }
 
 function fixture(t: any, name: string, title: string) {
-    var result = rewind(f(name));
-    var outputName = name.replace('.input.', '.output.');
+    const result = rewind(f(name));
+    const outputName = name.replace('.input.', '.output.');
     if (process.env.UPDATE) {
         fs.writeFileSync(outputName, JSON.stringify(result, null, 4));
     }
-    var expect = f(outputName);
+    const expect = f(outputName);
     t.deepEqual(result, expect, title);
 }
 

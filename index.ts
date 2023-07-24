@@ -94,7 +94,7 @@ export default class EsriDump extends EventEmitter {
         }
 
         for (const field of metadata.fields) {
-            let type = Types.has(field.type) ? Types.get(field.type) : 'string';
+            const type = Types.has(field.type) ? Types.get(field.type) : 'string';
 
             const prop: JSONSchema6 = doc.properties[field.name] = {
                 type

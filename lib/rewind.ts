@@ -45,8 +45,8 @@ function rewindRings(rings: Array<any>, outer: any) {
 function rewindRing(ring: Array<any>, dir: any) {
     let area = 0, err = 0;
     for (let i = 0, len = ring.length, j = len - 1; i < len; j = i++) {
-        let k = (ring[i][0] - ring[j][0]) * (ring[j][1] + ring[i][1]);
-        let  m = area + k;
+        const k = (ring[i][0] - ring[j][0]) * (ring[j][1] + ring[i][1]);
+        const  m = area + k;
         err += Math.abs(area) >= Math.abs(k) ? area - m + k : k - m + area;
         area = m;
     }

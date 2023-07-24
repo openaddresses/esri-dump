@@ -7,7 +7,7 @@
     "scripts": {
         "test": "ts-node-test test/",
         "build": "tsc --build",
-        "lint": "eslint *.js test/*.js lib/*.js"
+        "lint": "eslint *.ts test/*.ts lib/*.ts"
     },
     "repository": {
         "type": "git",

@@ -1,10 +1,8 @@
 import EsriDump from '../index.js';
 import test from 'tape';
 // @ts-ignore
-import geojsonhint from 'geojsonhint';
-import { Feature } from 'geojson';
 
-test('FeatureServer with points geometry', async (t) => {
+test('FeatureServer Schema', async (t) => {
     const url = 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Wildfire/FeatureServer/0';
 
     const esri = new EsriDump(url);
