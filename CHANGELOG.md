@@ -10,6 +10,13 @@
 
 ## Version History
 
+### v4.0.0
+
+- :tada: Adds a `schema` mode to allow parsing a Feature Layer as JSON Schema
+- :rocket: **Breaking** Update the CLI to have a "mode" that must be specified
+- :rocket: Automatically rewind GeoJSON Polygons to enforce the Right-Hand-Rule
+- :rocket: Add Support for `--header` param in CLI
+
 ### v3.1.0
 
 - :rocket: Fix ESRI Dump Bin
