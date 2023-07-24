@@ -39,7 +39,33 @@ export default class EsriDump extends EventEmitter {
             throw new Error('Unknown or unsupported ESRI URL Format');
         this.emit('type', this.resourceType);
     }
+    async schema() {
+        const metadata = await this.#fetchMeta();
+        console.error(metadata);
+        //ObjectID
+        //String
+        //Date
+        //Double
+        //Integer
+    }
     async fetch() {
+        const metadata = await this.#fetchMeta();
+        try {
+            const geom = new Geometry(this.url, metadata);
+            geom.fetch(this.config);
+            geom.on('feature', (feature) => {
+                this.emit('feature', feature);
+            }).on('error', (error) => {
+                this.emit('error', error);
+            }).on('done', () => {
+                this.emit('done');
+            });
+        }
+        catch (err) {
+            this.emit('error', err);
+        }
+    }
+    async #fetchMeta() {
         const url = new URL(this.url);
         url.searchParams.append('f', 'json');
         if (process.env.DEBUG)
@@ -88,20 +114,7 @@ export default class EsriDump extends EventEmitter {
         else if ('subLayers' in metadata && metadata.subLayers.length > 0) {
             return this.emit('error', new Error('Specified layer has sublayers.'));
         }
-        try {
-            const geom = new Geometry(this.url, metadata);
-            geom.fetch(this.config);
-            geom.on('feature', (feature) => {
-                this.emit('feature', feature);
-            }).on('error', (error) => {
-                this.emit('error', error);
-            }).on('done', () => {
-                this.emit('done');
-            });
-        }
-        catch (err) {
-            this.emit('error', err);
-        }
+        return metadata;
     }
 }
 //# sourceMappingURL=index.js.map

@@ -36,6 +36,8 @@
         "typescript": "^5.0.4"
     },
     "dependencies": {
+        "@openaddresses/batch-error": "^2.2.0",
+        "@types/json-schema": "^7.0.12",
         "minimist": "^1.2.8"
     }
 }
