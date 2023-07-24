@@ -1,4 +1,5 @@
 import EventEmitter from 'node:events';
+import Err from '@openaddresses/batch-error';
 import rings2geojson from './rings2geojson.js';
 import Fetch from './fetch.js';
 import { EsriDumpConfigApproach } from '../index.js';
@@ -25,7 +26,7 @@ export default class Geometry extends EventEmitter {
             else if (config.approach === EsriDumpConfigApproach.ITER)
                 await this.fetch_iter(config);
             else
-                throw new Error('Unknown Approach');
+                throw new Err(400, null, 'Unknown Approach');
         }
         catch (err) {
             this.emit('error', err);
@@ -33,7 +34,7 @@ export default class Geometry extends EventEmitter {
     }
     async fetch_iter(config) {
         if (!this.oidField)
-            this.emit('error', new Error('Cannot use iter function as oidField could not be determined'));
+            this.emit('error', new Err(400, null, 'Cannot use iter function as oidField could not be determined'));
         const url = new URL(String(this.baseUrl) + '/query');
         url.searchParams.append('returnCountOnly', 'true');
         url.searchParams.append('where', '1=1');
@@ -80,10 +81,10 @@ export default class Geometry extends EventEmitter {
                     break;
                 }
                 else if (!data) {
-                    return this.emit('error', 'Data from' + url + ' undefined');
+                    return this.emit('error', new Err(400, null, 'Data from' + url + ' undefined'));
                 }
                 else {
-                    return this.emit('error', 'Error with ' + url);
+                    return this.emit('error', new Err(400, null, 'Error with ' + url));
                 }
             }
             if (attempts > 5)
@@ -138,10 +139,10 @@ export default class Geometry extends EventEmitter {
                     break;
                 }
                 else if (!data) {
-                    return this.emit('error', 'Data from' + url + ' undefined');
+                    return this.emit('error', new Err(400, null, 'Data from' + url + ' undefined'));
                 }
                 else {
-                    return this.emit('error', 'Error with ' + url);
+                    return this.emit('error', new Err(400, null, 'Error with ' + url));
                 }
             }
             if (attempts > 5)
@@ -206,7 +207,7 @@ export default class Geometry extends EventEmitter {
                 return nextBestOidField.name;
             }
             else {
-                throw new Error('Could not determine OBJECTID field.');
+                throw new Err(400, null, 'Could not determine OBJECTID field.');
             }
         }
     }

@@ -1,6 +1,24 @@
 import Geometry from './lib/geometry.js';
 import Fetch from './lib/fetch.js';
 import EventEmitter from 'node:events';
+import Err from '@openaddresses/batch-error';
+import rewind from './lib/rewind.js';
+// Ref: https://help.arcgis.com/en/sdk/10.0/java_ao_adf/api/arcgiswebservices/com/esri/arcgisws/EsriFieldType.html
+const Types = new Map([
+    ['esriFieldTypeDate', 'string'],
+    ['esriFieldTypeString', 'string'],
+    ['esriFieldTypeDouble', 'number'],
+    ['esriFieldTypeSingle', 'number'],
+    ['esriFieldTypeOID', 'number'],
+    ['esriFieldTypeInteger', 'integer'],
+    ['esriFieldTypeSmallInteger', 'integer'],
+    ['esriFieldTypeGeometry', 'object'],
+    ['esriFieldTypeBlob', 'object'],
+    ['esriFieldTypeGlobalID', 'string'],
+    ['esriFieldTypeRaster', 'object'],
+    ['esriFieldTypeGUID', 'string'],
+    ['esriFieldTypeXML', 'string'],
+]);
 const SUPPORTED = ['FeatureServer', 'MapServer'];
 export var EsriDumpConfigApproach;
 (function (EsriDumpConfigApproach) {
@@ -27,7 +45,7 @@ export default class EsriDump extends EventEmitter {
         };
         // Validate URL is a "/rest/services/" endpoint
         if (!this.url.pathname.includes('/rest/services/'))
-            throw new Error('Did not recognize ' + url + ' as an ArcGIS /rest/services/ endpoint.');
+            throw new Err(400, null, 'Did not recognize ' + url + ' as an ArcGIS /rest/services/ endpoint.');
         this.geomType = null;
         const occurrence = SUPPORTED.map((d) => { return url.lastIndexOf(d); });
         const known = SUPPORTED[occurrence.indexOf(Math.max.apply(null, occurrence))];
@@ -36,17 +54,29 @@ export default class EsriDump extends EventEmitter {
         else if (known === 'FeatureServer')
             this.resourceType = EsriResourceType.FeatureServer;
         else
-            throw new Error('Unknown or unsupported ESRI URL Format');
+            throw new Err(400, null, 'Unknown or unsupported ESRI URL Format');
         this.emit('type', this.resourceType);
     }
     async schema() {
         const metadata = await this.#fetchMeta();
-        console.error(metadata);
-        //ObjectID
-        //String
-        //Date
-        //Double
-        //Integer
+        if (!metadata.fields && !Array.isArray(metadata.fields))
+            throw new Err(400, null, 'No Fields array present in response');
+        const doc = {
+            type: 'object',
+            required: [],
+            additionalProperties: false,
+            properties: {}
+        };
+        for (const field of metadata.fields) {
+            let type = Types.has(field.type) ? Types.get(field.type) : 'string';
+            const prop = doc.properties[field.name] = {
+                type
+            };
+            if (!isNaN(field.length) && prop.type === 'string') {
+                prop.maxLength = field.length;
+            }
+        }
+        return doc;
     }
     async fetch() {
         const metadata = await this.#fetchMeta();
@@ -54,7 +84,7 @@ export default class EsriDump extends EventEmitter {
             const geom = new Geometry(this.url, metadata);
             geom.fetch(this.config);
             geom.on('feature', (feature) => {
-                this.emit('feature', feature);
+                this.emit('feature', rewind(feature));
             }).on('error', (error) => {
                 this.emit('error', error);
             }).on('done', () => {
@@ -76,10 +106,10 @@ export default class EsriDump extends EventEmitter {
         // TODO: Type Defs
         const metadata = await res.json();
         if (metadata.error) {
-            return this.emit('error', new Error('Server metadata error: ' + metadata.error.message));
+            return this.emit('error', new Err(400, null, 'Server metadata error: ' + metadata.error.message));
         }
         else if (metadata.capabilities && metadata.capabilities.indexOf('Query') === -1) {
-            return this.emit('error', new Error('Layer doesn\'t support query operation.'));
+            return this.emit('error', new Err(400, null, 'Layer doesn\'t support query operation.'));
         }
         else if (metadata.folders || metadata.services) {
             let errorMessage = 'Endpoint provided is not a Server resource.\n';
@@ -91,7 +121,7 @@ export default class EsriDump extends EventEmitter {
                 errorMessage += '\nChoose a Layer from one of these Services: \n  '
                     + metadata.services.map((d) => { return d.name; }).join('\n  ') + '\n';
             }
-            return this.emit('error', new Error(errorMessage));
+            return this.emit('error', new Err(400, null, errorMessage));
         }
         else if (metadata.layers) {
             let errorMessage = 'Endpoint provided is not a Server resource.\n';
@@ -99,20 +129,20 @@ export default class EsriDump extends EventEmitter {
                 errorMessage += '\nChoose one of these Layers: \n  '
                     + metadata.layers.map((d) => { return d.name; }).join('\n  ') + '\n';
             }
-            return this.emit('error', new Error(errorMessage));
+            return this.emit('error', new Err(400, null, errorMessage));
         }
         else if (!this.resourceType) {
-            return this.emit('error', new Error('Could not determine server type of ' + url));
+            return this.emit('error', new Err(400, null, 'Could not determine server type of ' + url));
         }
         this.geomType = metadata.geometryType;
         if (!this.geomType) {
-            return this.emit('error', new Error('no geometry'));
+            return this.emit('error', new Err(400, null, 'no geometry'));
         }
         else if (!metadata.extent) {
-            return this.emit('error', new Error('Layer doesn\'t list an extent.'));
+            return this.emit('error', new Err(400, null, 'Layer doesn\'t list an extent.'));
         }
         else if ('subLayers' in metadata && metadata.subLayers.length > 0) {
-            return this.emit('error', new Error('Specified layer has sublayers.'));
+            return this.emit('error', new Err(400, null, 'Specified layer has sublayers.'));
         }
         return metadata;
     }

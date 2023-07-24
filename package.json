@@ -37,6 +37,7 @@
     },
     "dependencies": {
         "@openaddresses/batch-error": "^2.2.0",
+        "@types/express": "^4.17.17",
         "@types/json-schema": "^7.0.12",
         "minimist": "^1.2.8"
     }

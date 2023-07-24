@@ -2,7 +2,7 @@
 import EsriDump from './index.js';
 import minimist from 'minimist';
 const argv = minimist(process.argv, {
-    string: ['approach'],
+    string: ['approach', 'header'],
     boolean: ['help']
 });
 if (argv.help) {
@@ -13,6 +13,7 @@ if (argv.help) {
     console.log('Args:');
     console.log('  --help                   Display this message');
     console.log('Mode: fetch [--approach] <url>');
+    console.log('  --header \'key=value\'   IE --header \'Content-Type=123\'');
     console.log('  --approach [approach]    Download Approach');
     console.log('             "bbox"        Download features by iterating over bboxes');
     console.log('                             slowest but most reliable approach');
@@ -27,8 +28,18 @@ if (!argv._[2])
 const url = argv._[3];
 if (!url)
     throw new Error('url required');
+const headers = {};
+if (argv.header) {
+    if (typeof argv.header === 'string')
+        argv.header = [argv.header];
+    for (const header of argv.header) {
+        const parsed = header.split('=');
+        headers[parsed[0]] = parsed.slice(1, parsed.length).join('=');
+    }
+}
 const esri = new EsriDump(url, {
-    approach: argv.approach
+    approach: argv.approach,
+    headers
 });
 if (argv._[2] === 'fetch') {
     esri.on('error', (err) => {
