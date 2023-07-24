@@ -7,7 +7,7 @@
     "scripts": {
         "test": "ts-node-test test/",
         "build": "tsc --build",
-        "lint": "eslint *.js test/*.js lib/*.js"
+        "lint": "eslint *.ts test/*.ts lib/*.ts"
     },
     "repository": {
         "type": "git",
@@ -25,17 +25,20 @@
     "devDependencies": {
         "@types/geojson": "^7946.0.10",
         "@types/minimist": "^1.2.2",
-        "@types/tape": "^4.13.4",
-        "@typescript-eslint/eslint-plugin": "^5.59.0",
-        "@typescript-eslint/parser": "^5.59.0",
+        "@types/tape": "^5.0.0",
+        "@typescript-eslint/eslint-plugin": "^6.0.0",
+        "@typescript-eslint/parser": "^6.0.0",
         "eslint": "^8.36.0",
-        "geojsonhint": "^1.2.0",
+        "geojsonhint": "^2.0.0",
         "tape": "^5.0.0",
         "ts-node": "^10.9.1",
         "ts-node-test": "^0.4.1",
         "typescript": "^5.0.4"
     },
     "dependencies": {
+        "@openaddresses/batch-error": "^2.2.0",
+        "@types/express": "^4.17.17",
+        "@types/json-schema": "^7.0.12",
         "minimist": "^1.2.8"
     }
 }

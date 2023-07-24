@@ -13,7 +13,7 @@ if (process.argv[2] === 'start') {
     }));
 }
 
-export default function Server(opts: any, cb: Function) {
+export default function Server(opts: any, cb: any) {
     if (!opts.mode) { throw new Error('options.mode must be set'); }
     options = opts;
 

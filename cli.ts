@@ -3,39 +3,61 @@ import EsriDump from './index.js';
 import minimist from 'minimist';
 
 const argv = minimist(process.argv, {
-    string: ['approach'],
+    string: ['approach', 'header'],
     boolean: ['help']
 });
 
 if (argv.help) {
     console.log();
     console.log('Usage:');
-    console.log('  node cli.js [--help] [--approach=bbox]');
+    console.log('  node cli.js [mode] [--help]');
     console.log();
     console.log('Args:');
     console.log('  --help                   Display this message');
+    console.log('Mode: fetch [--approach] <url>');
+    console.log('  --header \'key=value\'   IE --header \'Content-Type=123\'');
     console.log('  --approach [approach]    Download Approach');
     console.log('             "bbox"        Download features by iterating over bboxes');
     console.log('                             slowest but most reliable approach');
     console.log('             "iter"        Iterate over OIDs');
     console.log('                             faster but not supported by all servers');
+    console.log('Mode: schema <url>');
     console.log();
     process.exit();
 }
 
-const url = argv._[2];
+if (!argv._[2]) throw new Error('Mode required');
 
+const url = argv._[3];
 if (!url) throw new Error('url required');
 
+const headers: any = {};
+if (argv.header) {
+    if (typeof argv.header === 'string') argv.header = [ argv.header ];
+    for (const header of argv.header) {
+        const parsed = header.split('=');
+        headers[parsed[0]] = parsed.slice(1, parsed.length).join('=');
+    }
+}
+
+
 const esri = new EsriDump(url, {
-    approach: argv.approach
+    approach: argv.approach,
+    headers
 });
 
-esri.on('error', (err) => {
-    throw err;
-}).on('feature', (feature) => {
-    console.log(JSON.stringify(feature));
-});
 
-await esri.fetch();
+if (argv._[2] === 'fetch') {
+    esri.on('error', (err) => {
+        throw err;
+    }).on('feature', (feature) => {
+        console.log(JSON.stringify(feature));
+    });
+
+    await esri.fetch();
+} else if (argv._[2] === 'schema') {
+    await esri.schema();
+} else {
+    throw new Error('Unknown Mode');
+}
 
