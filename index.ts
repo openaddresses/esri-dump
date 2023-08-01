@@ -5,7 +5,7 @@ import { Feature } from 'geojson';
 import Err from '@openaddresses/batch-error';
 import rewind from './lib/rewind.js';
 import {
-    JSONSchema6,
+    JSONSchema6Object,
     JSONSchema6TypeName
 } from 'json-schema';
 
@@ -81,12 +81,12 @@ export default class EsriDump extends EventEmitter {
         this.emit('type', this.resourceType);
     }
 
-    async schema(): Promise<JSONSchema6> {
+    async schema(): Promise<JSONSchema6Object> {
         const metadata = await this.#fetchMeta();
 
         if (!metadata.fields && !Array.isArray(metadata.fields)) throw new Err(400, null, 'No Fields array present in response');
 
-        const doc: JSONSchema6 = {
+        const doc: JSONSchema6Object = {
             type: 'object',
             required: [],
             additionalProperties: false,
@@ -96,7 +96,7 @@ export default class EsriDump extends EventEmitter {
         for (const field of metadata.fields) {
             const type = Types.has(field.type) ? Types.get(field.type) : 'string';
 
-            const prop: JSONSchema6 = doc.properties[field.name] = {
+            const prop: JSONSchema6Object = doc.properties[field.name] = {
                 type
             }
 
