@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v4.1.0
+
+- :rocket: Be more specific about type of returned schema
+
 ### v4.0.0
 
 - :tada: Adds a `schema` mode to allow parsing a Feature Layer as JSON Schema
