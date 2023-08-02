@@ -68,11 +68,12 @@ export default class EsriDump extends EventEmitter {
             properties: {}
         };
         for (const field of metadata.fields) {
-            let type = Types.has(field.type) ? Types.get(field.type) : 'string';
-            const prop = doc.properties[field.name] = {
+            const name = String(field.name);
+            const type = Types.has(field.type) ? Types.get(field.type) : 'string';
+            const prop = doc.properties[name] = {
                 type
             };
-            if (!isNaN(field.length) && prop.type === 'string') {
+            if (!isNaN(field.length) && type === 'string') {
                 prop.maxLength = field.length;
             }
         }
