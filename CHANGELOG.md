@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v4.1.1
+
+- :bug: Fix JS build
+
 ### v4.1.0
 
 - :rocket: Be more specific about type of returned schema
