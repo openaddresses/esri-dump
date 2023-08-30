@@ -8,6 +8,7 @@ export default async function Fetch(config, url, opts = {}) {
     if (opts.headers)
         Object.assign(opts.headers, config.headers);
     const headers = new Headers();
+    headers.set('Accept-Encoding', 'gzip');
     for (const header in opts.headers) {
         headers.set(header, opts.headers[header]);
     }

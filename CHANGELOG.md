@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v4.2.0
+
+- :bug: Use `gzip` Encoding by default
+
 ### v4.1.1
 
 - :bug: Fix JS build
