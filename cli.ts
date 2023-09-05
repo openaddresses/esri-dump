@@ -56,7 +56,7 @@ if (argv._[2] === 'fetch') {
 
     await esri.fetch();
 } else if (argv._[2] === 'schema') {
-    await esri.schema();
+    console.log(JSON.stringify(await esri.schema(), null, 4));
 } else {
     throw new Error('Unknown Mode');
 }
