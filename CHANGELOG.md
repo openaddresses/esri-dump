@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v4.2.1
+
+- :bug: Output Schema to STDOut when using CLI
+
 ### v4.2.0
 
 - :bug: Use `gzip` Encoding by default
