@@ -1,13 +1,14 @@
-esri-dump
-=========
+<h1 align=center>esri-dump</h1>
 
-A Node module to assist with pulling data out of an ESRI ArcGIS REST server into GeoJSON or ImageryURLs.
+<p align=center>A Node module to assist with pulling data out of an ESRI ArcGIS REST server into GeoJSON or ImageryURLs</p>
 
-This is based on [Python code](http://github.com/iandees/esri-dump) @iandees wrote to do the same thing.
+Based On [PyEsriDump](http://github.com/openaddresses/pyesridump) by [@iandees](https://github.com/iandees)
 
-## install
+## Install
 
-    npm install -g esri-dump
+```sh
+npm install -g esri-dump
+```
 
 ## API
 
@@ -49,49 +50,44 @@ esri.on('error', (err) => {
 Streams a geojson feature collection to stdout
 
 ```sh
-esri-dump http://services2.bhamaps.com/arcgis/rest/services/AGS_jackson_co_il_taxmap/MapServer/0 > output.geojson
+esri-dump fetch http://services2.bhamaps.com/arcgis/rest/services/AGS_jackson_co_il_taxmap/MapServer/0 > output.geojson
 ```
 
 ## Data Output
 
 ### FeatureServer and MapServer
 
-Output from an ESRI `FeatureServer` or an ESRI `MapServer` is returned as GeoJSON like the example below.
+Output from an ESRI `FeatureServer` or an ESRI `MapServer` is returned as GeoJSON as in the example below.
 
 ```json
 {
-    "type": "FeatureCollection",
-    "features": [
-        {
-            "type": "Feature",
-            "properties": {
-                "objectid": 1
-            },
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -65.6231319,
-                            31.7127058
-                        ],
-                        [
-                            -65.6144566,
-                            31.7020286
-                        ],
-                        [
-                            -65.6231319,
-                            31.698692
-                        ],
-                        [
-                            -65.6231319,
-                            31.7127058
-                        ]
-                    ]
+    "type": "Feature",
+    "properties": {
+        "objectid": 1
+    },
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+            [
+                [
+                    -65.6231319,
+                    31.7127058
+                ],
+                [
+                    -65.6144566,
+                    31.7020286
+                ],
+                [
+                    -65.6231319,
+                    31.698692
+                ],
+                [
+                    -65.6231319,
+                    31.7127058
                 ]
-            }
-        }
-    ]
+            ]
+        ]
+    }
 }
 ```
 
