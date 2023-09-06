@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v4.3.1
+
+- :bug: Include dist directory for now
+
 ### v4.3.0
 
 - :rocket: Add initial `discovery` mode for finding all services and layers on a server
