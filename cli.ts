@@ -15,6 +15,7 @@ if (argv.help) {
     console.log('Args:');
     console.log('  --help                   Display this message');
     console.log('Mode: fetch [--approach] <url>');
+    console.log('  Retrieve all geospatial features from a single layer');
     console.log('  --header \'key=value\'   IE --header \'Content-Type=123\'');
     console.log('  --approach [approach]    Download Approach');
     console.log('             "bbox"        Download features by iterating over bboxes');
@@ -22,6 +23,10 @@ if (argv.help) {
     console.log('             "iter"        Iterate over OIDs');
     console.log('                             faster but not supported by all servers');
     console.log('Mode: schema <url>');
+    console.log('  Return a JSON Schema for a given layer');
+    console.log('Mode: discover <url> [--schema]');
+    console.log('  Locate all geospatial layers on a given server');
+    console.log('  --schema                 Include Schema Events for each layer');
     console.log();
     process.exit();
 }
@@ -57,6 +62,18 @@ if (argv._[2] === 'fetch') {
     await esri.fetch();
 } else if (argv._[2] === 'schema') {
     console.log(JSON.stringify(await esri.schema(), null, 4));
+} else if (argv._[2] === 'discover') {
+    esri.on('error', (err) => {
+        throw err;
+    }).on('schema', (schema) => {
+        console.log(JSON.stringify(schema));
+    }).on('layer', (layer) => {
+        console.log(JSON.stringify(layer));
+    });
+
+    await esri.discover({
+        schema: argv.schema
+    });
 } else {
     throw new Error('Unknown Mode');
 }

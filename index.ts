@@ -1,4 +1,5 @@
 import Geometry from './lib/geometry.js';
+import Discovery from './lib/discovery.js';
 import Fetch from './lib/fetch.js';
 import EventEmitter from 'node:events';
 import { Feature } from 'geojson';
@@ -108,6 +109,28 @@ export default class EsriDump extends EventEmitter {
         }
 
         return doc;
+    }
+
+    async discover(opts: {
+            schema?: boolean
+        }) {
+
+        try {
+            const discover = new Discovery(this.url);
+            discover.fetch(opts);
+
+            discover.on('layer', (layer: any) => {
+                this.emit('layer', layer);
+            }).on('schema', (schema: JSONSchema6) => {
+                this.emit('schema', schema);
+            }).on('error', (error: Err) => {
+                this.emit('error', error);
+            }).on('done', () => {
+                this.emit('done');
+            });
+        } catch (err) {
+            this.emit('error', err);
+        }
     }
 
     async fetch() {
