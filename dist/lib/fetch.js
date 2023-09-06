@@ -5,6 +5,7 @@ export default async function Fetch(config, url, opts = {}) {
         config.params = {};
     for (const param in config.params)
         url.searchParams.append(param, config.params[param]);
+    url.searchParams.append('f', 'json');
     if (opts.headers)
         Object.assign(opts.headers, config.headers);
     const headers = new Headers();

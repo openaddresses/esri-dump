@@ -1,24 +1,10 @@
 import Geometry from './lib/geometry.js';
+import Discovery from './lib/discovery.js';
 import Fetch from './lib/fetch.js';
 import EventEmitter from 'node:events';
 import Err from '@openaddresses/batch-error';
 import rewind from './lib/rewind.js';
-// Ref: https://help.arcgis.com/en/sdk/10.0/java_ao_adf/api/arcgiswebservices/com/esri/arcgisws/EsriFieldType.html
-const Types = new Map([
-    ['esriFieldTypeDate', 'string'],
-    ['esriFieldTypeString', 'string'],
-    ['esriFieldTypeDouble', 'number'],
-    ['esriFieldTypeSingle', 'number'],
-    ['esriFieldTypeOID', 'number'],
-    ['esriFieldTypeInteger', 'integer'],
-    ['esriFieldTypeSmallInteger', 'integer'],
-    ['esriFieldTypeGeometry', 'object'],
-    ['esriFieldTypeBlob', 'object'],
-    ['esriFieldTypeGlobalID', 'string'],
-    ['esriFieldTypeRaster', 'object'],
-    ['esriFieldTypeGUID', 'string'],
-    ['esriFieldTypeXML', 'string'],
-]);
+import Schema from './lib/schema.js';
 const SUPPORTED = ['FeatureServer', 'MapServer'];
 export var EsriDumpConfigApproach;
 (function (EsriDumpConfigApproach) {
@@ -59,25 +45,25 @@ export default class EsriDump extends EventEmitter {
     }
     async schema() {
         const metadata = await this.#fetchMeta();
-        if (!metadata.fields && !Array.isArray(metadata.fields))
-            throw new Err(400, null, 'No Fields array present in response');
-        const doc = {
-            type: 'object',
-            required: [],
-            additionalProperties: false,
-            properties: {}
-        };
-        for (const field of metadata.fields) {
-            const name = String(field.name);
-            const type = Types.has(field.type) ? Types.get(field.type) : 'string';
-            const prop = doc.properties[name] = {
-                type
-            };
-            if (!isNaN(field.length) && type === 'string') {
-                prop.maxLength = field.length;
-            }
+        return Schema(metadata);
+    }
+    async discover() {
+        try {
+            const discover = new Discovery(this.url);
+            discover.fetch(this.config);
+            discover.on('layer', (layer) => {
+                this.emit('layer', layer);
+            }).on('schema', (schema) => {
+                this.emit('schema', schema);
+            }).on('error', (error) => {
+                this.emit('error', error);
+            }).on('done', () => {
+                this.emit('done');
+            });
         }
-        return doc;
+        catch (err) {
+            this.emit('error', err);
+        }
     }
     async fetch() {
         const metadata = await this.#fetchMeta();
