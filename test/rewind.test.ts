@@ -1,7 +1,7 @@
 import rewind from '../lib/rewind.js';
 import fs from 'node:fs';
 import path from 'node:path';
-import test from 'tape';
+import test, {Test} from 'tape';
 
 const base = new URL(path.parse(import.meta.url).dir).pathname;
 
@@ -9,7 +9,7 @@ function f(_: string) {
     return JSON.parse(fs.readFileSync(_, 'utf8'));
 }
 
-function fixture(t: any, name: string, title: string) {
+function fixture(t: Test, name: string, title: string) {
     const result = rewind(f(name));
     const outputName = name.replace('.input.', '.output.');
     if (process.env.UPDATE) {

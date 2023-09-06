@@ -24,9 +24,8 @@ if (argv.help) {
     console.log('                             faster but not supported by all servers');
     console.log('Mode: schema <url>');
     console.log('  Return a JSON Schema for a given layer');
-    console.log('Mode: discover <url> [--schema]');
+    console.log('Mode: discover <url>');
     console.log('  Locate all geospatial layers on a given server');
-    console.log('  --schema                 Include Schema Events for each layer');
     console.log();
     process.exit();
 }
@@ -65,15 +64,13 @@ if (argv._[2] === 'fetch') {
 } else if (argv._[2] === 'discover') {
     esri.on('error', (err) => {
         throw err;
-    }).on('schema', (schema) => {
-        console.log(JSON.stringify(schema));
+    }).on('service', (service) => {
+        console.log(JSON.stringify(service));
     }).on('layer', (layer) => {
         console.log(JSON.stringify(layer));
     });
 
-    await esri.discover({
-        schema: argv.schema
-    });
+    await esri.discover();
 } else {
     throw new Error('Unknown Mode');
 }

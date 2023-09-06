@@ -5,27 +5,10 @@ import EventEmitter from 'node:events';
 import { Feature } from 'geojson';
 import Err from '@openaddresses/batch-error';
 import rewind from './lib/rewind.js';
+import Schema from './lib/schema.js';
 import {
     JSONSchema6,
-    JSONSchema6TypeName
 } from 'json-schema';
-
-// Ref: https://help.arcgis.com/en/sdk/10.0/java_ao_adf/api/arcgiswebservices/com/esri/arcgisws/EsriFieldType.html
-const Types: Map<string, JSONSchema6TypeName> = new Map([
-    ['esriFieldTypeDate', 'string'],
-    ['esriFieldTypeString', 'string'],
-    ['esriFieldTypeDouble', 'number'],
-    ['esriFieldTypeSingle', 'number'],
-    ['esriFieldTypeOID', 'number'],
-    ['esriFieldTypeInteger', 'integer'],
-    ['esriFieldTypeSmallInteger', 'integer'],
-    ['esriFieldTypeGeometry', 'object'],
-    ['esriFieldTypeBlob', 'object'],
-    ['esriFieldTypeGlobalID', 'string'],
-    ['esriFieldTypeRaster', 'object'],
-    ['esriFieldTypeGUID', 'string'],
-    ['esriFieldTypeXML', 'string'],
-]);
 
 const SUPPORTED = ['FeatureServer', 'MapServer'];
 
@@ -84,40 +67,13 @@ export default class EsriDump extends EventEmitter {
 
     async schema(): Promise<JSONSchema6> {
         const metadata = await this.#fetchMeta();
-
-        if (!metadata.fields && !Array.isArray(metadata.fields)) throw new Err(400, null, 'No Fields array present in response');
-
-        const doc: JSONSchema6 = {
-            type: 'object',
-            required: [],
-            additionalProperties: false,
-            properties: {}
-        }
-
-        for (const field of metadata.fields) {
-            const name = String(field.name);
-
-            const type: JSONSchema6TypeName = Types.has(field.type) ? Types.get(field.type) : 'string';
-
-            const prop: JSONSchema6 = doc.properties[name] = {
-                type
-            }
-
-            if (!isNaN(field.length) && type === 'string') {
-                prop.maxLength = field.length;
-            }
-        }
-
-        return doc;
+        return Schema(metadata);
     }
 
-    async discover(opts: {
-            schema?: boolean
-        }) {
-
+    async discover() {
         try {
             const discover = new Discovery(this.url);
-            discover.fetch(opts);
+            discover.fetch(this.config);
 
             discover.on('layer', (layer: any) => {
                 this.emit('layer', layer);

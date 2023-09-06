@@ -58,7 +58,6 @@ export default class Geometry extends EventEmitter {
         const url = new URL(String(this.baseUrl) + '/query');
         url.searchParams.append('returnCountOnly', 'true');
         url.searchParams.append('where', '1=1');
-        url.searchParams.append('f', 'json');
 
         if (process.env.DEBUG) console.error(String(url));
         const res = await Fetch(config, url);
@@ -80,7 +79,6 @@ export default class Geometry extends EventEmitter {
             url.searchParams.append('returnGeometry', 'true');
             url.searchParams.append('outSR', '4326');
             url.searchParams.append('outFields', '*');
-            url.searchParams.append('f', 'json');
             url.searchParams.append('resultOffset', String(curr));
 
             let data = null;
@@ -132,7 +130,6 @@ export default class Geometry extends EventEmitter {
             url.searchParams.append('returnGeometry', 'true');
             url.searchParams.append('outSR', '4326');
             url.searchParams.append('outFields', '*');
-            url.searchParams.append('f', 'json');
 
             let attempts = 0;
 
