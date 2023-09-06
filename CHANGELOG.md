@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v4.3.0
+
+- :rocket: Add initial `discovery` mode for finding all services and layers on a server
+
 ### v4.2.1
 
 - :bug: Output Schema to STDOut when using CLI
