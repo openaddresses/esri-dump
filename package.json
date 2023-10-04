@@ -1,7 +1,7 @@
 {
     "name": "esri-dump",
     "type": "module",
-    "version": "4.3.1",
+    "version": "4.3.2",
     "author": "Ian Dees <ian.dees@gmail.com>",
     "description": "Assist with pulling data out of an ESRI ArcGIS REST server into a more useful format.",
     "scripts": {
