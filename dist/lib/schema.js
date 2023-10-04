@@ -1,4 +1,3 @@
-import Err from '@openaddresses/batch-error';
 // Ref: https://help.arcgis.com/en/sdk/10.0/java_ao_adf/api/arcgiswebservices/com/esri/arcgisws/EsriFieldType.html
 const Types = new Map([
     ['esriFieldTypeDate', 'string'],
@@ -16,14 +15,15 @@ const Types = new Map([
     ['esriFieldTypeXML', 'string'],
 ]);
 export default function FieldToSchema(metadata) {
-    if (!metadata.fields && !Array.isArray(metadata.fields))
-        throw new Err(400, null, 'No Fields array present in response');
     const doc = {
         type: 'object',
         required: [],
         additionalProperties: false,
         properties: {}
     };
+    if (!metadata.fields && !Array.isArray(metadata.fields)) {
+        return doc;
+    }
     for (const field of metadata.fields) {
         const name = String(field.name);
         const type = Types.has(field.type) ? Types.get(field.type) : 'string';
