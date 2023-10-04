@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v4.3.2
+
+- :bug: Don't throw on metadata.fields not being present
+
 ### v4.3.1
 
 - :bug: Include dist directory for now
