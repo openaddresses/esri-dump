@@ -22,13 +22,15 @@ const Types: Map<string, JSONSchema6TypeName> = new Map([
 ]);
 
 export default function FieldToSchema(metadata: any) {
-    if (!metadata.fields && !Array.isArray(metadata.fields)) throw new Err(400, null, 'No Fields array present in response');
-
     const doc: JSONSchema6 = {
         type: 'object',
         required: [],
         additionalProperties: false,
         properties: {}
+    }
+
+    if (!metadata.fields && !Array.isArray(metadata.fields)) {
+        return doc;
     }
 
     for (const field of metadata.fields) {
