@@ -10,6 +10,12 @@
 
 ## Version History
 
+### v4.4.0
+
+- :bug: Cleaner error messages in the CLI
+- :tada: Set `feature.id` as the OID field
+- :bug: Fix double `f=json` when fetching metadata causing a failure
+
 ### v4.3.2
 
 - :bug: Don't throw on metadata.fields not being present

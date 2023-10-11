@@ -110,7 +110,6 @@ export default class EsriDump extends EventEmitter {
 
     async #fetchMeta() {
         const url = new URL(this.url);
-        url.searchParams.append('f', 'json');
 
         if (process.env.DEBUG) console.error(String(url));
         const res = await Fetch(this.config, url);

@@ -53,7 +53,7 @@ const esri = new EsriDump(url, {
 
 if (argv._[2] === 'fetch') {
     esri.on('error', (err) => {
-        throw err;
+        console.error(err);
     }).on('feature', (feature) => {
         console.log(JSON.stringify(feature));
     });
@@ -63,7 +63,7 @@ if (argv._[2] === 'fetch') {
     console.log(JSON.stringify(await esri.schema(), null, 4));
 } else if (argv._[2] === 'discover') {
     esri.on('error', (err) => {
-        throw err;
+        console.error(err);
     }).on('service', (service) => {
         console.log(JSON.stringify(service));
     }).on('layer', (layer) => {

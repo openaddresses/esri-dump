@@ -1,4 +1,3 @@
-import Err from '@openaddresses/batch-error';
 import {
     JSONSchema6,
     JSONSchema6TypeName

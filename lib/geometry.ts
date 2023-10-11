@@ -184,12 +184,14 @@ export default class Geometry extends EventEmitter {
     toGeoJSON(esrifeature: any): Feature {
         if (this.geomType === 'esriGeometryPolygon') {
             return {
+                id: esrifeature.attributes[this.oidField],
                 type: 'Feature',
                 properties: esrifeature.attributes,
                 geometry: rings2geojson(esrifeature.geometry.rings)
             };
         } else if (this.geomType === 'esriGeometryPolyline') {
             return {
+                id: esrifeature.attributes[this.oidField],
                 type: 'Feature',
                 properties: esrifeature.attributes,
                 geometry: {
@@ -199,6 +201,7 @@ export default class Geometry extends EventEmitter {
             };
         } else if (this.geomType === 'esriGeometryPoint') {
             return {
+                id: esrifeature.attributes[this.oidField],
                 type: 'Feature',
                 properties: esrifeature.attributes,
                 geometry: {

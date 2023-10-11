@@ -1,6 +1,5 @@
 import EventEmitter from 'node:events';
 import Fetch from './fetch.js';
-import { Feature } from 'geojson';
 import { EsriDumpConfig } from '../index.js';
 import Schema from './schema.js';
 
