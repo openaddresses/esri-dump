@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v4.4.1
+
+- :bug: Include built version
+
 ### v4.4.0
 
 - :bug: Cleaner error messages in the CLI
