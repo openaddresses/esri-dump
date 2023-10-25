@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v4.5.0
+
+- :rocket: Use user provided `where` parameter where possible
+
 ### v4.4.1
 
 - :bug: Include built version

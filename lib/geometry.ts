@@ -57,7 +57,7 @@ export default class Geometry extends EventEmitter {
 
         const url = new URL(String(this.baseUrl) + '/query');
         url.searchParams.append('returnCountOnly', 'true');
-        url.searchParams.append('where', '1=1');
+        if (!config.params.where) url.searchParams.append('where', '1=1');
 
         if (process.env.DEBUG) console.error(String(url));
         const res = await Fetch(config, url);
@@ -74,7 +74,7 @@ export default class Geometry extends EventEmitter {
             let attempts = 0;
 
             const url = new URL(String(this.baseUrl) + '/query');
-            url.searchParams.append('where', '1=1');
+            if (!config.params.where) url.searchParams.append('where', '1=1');
             url.searchParams.append('geometryPrecision', '7');
             url.searchParams.append('returnGeometry', 'true');
             url.searchParams.append('outSR', '4326');

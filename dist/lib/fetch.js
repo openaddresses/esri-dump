@@ -1,4 +1,5 @@
 export default async function Fetch(config, url, opts = {}) {
+    url = new URL(url);
     if (!config.headers)
         config.headers = {};
     if (!config.params)

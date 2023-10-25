@@ -13,6 +13,8 @@ export default async function Fetch(
     url: URL,
     opts: FetchRequest = {}
 ): Promise<any> {
+    url = new URL(url);
+
     if (!config.headers) config.headers = {};
     if (!config.params) config.params = {};
 
