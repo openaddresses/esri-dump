@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v4.6.0
+
+- :bug: If `meta.count` was 0 the unable to determine count error would be thrown incorrectly
+
 ### v4.5.0
 
 - :rocket: Use user provided `where` parameter where possible
