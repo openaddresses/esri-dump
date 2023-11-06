@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v4.6.2
+
+- :bug: Fix the way headers were appended
+
 ### v4.6.1
 
 - :arrow_up: Update base deps
