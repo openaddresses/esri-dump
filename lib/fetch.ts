@@ -22,7 +22,8 @@ export default async function Fetch(
 
     url.searchParams.append('f', 'json');
 
-    if (opts.headers) Object.assign(opts.headers, config.headers);
+    if (!opts.headers) opts.headers = {};
+    Object.assign(opts.headers, config.headers);
 
     const headers: HeadersInit = new Headers();
     headers.set('Accept-Encoding', 'gzip');

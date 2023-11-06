@@ -7,8 +7,9 @@ export default async function Fetch(config, url, opts = {}) {
     for (const param in config.params)
         url.searchParams.append(param, config.params[param]);
     url.searchParams.append('f', 'json');
-    if (opts.headers)
-        Object.assign(opts.headers, config.headers);
+    if (!opts.headers)
+        opts.headers = {};
+    Object.assign(opts.headers, config.headers);
     const headers = new Headers();
     headers.set('Accept-Encoding', 'gzip');
     for (const header in opts.headers) {
