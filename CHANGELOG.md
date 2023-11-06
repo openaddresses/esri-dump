@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v4.6.1
+
+- :arrow_up: Update base deps
+
 ### v4.6.0
 
 - :bug: If `meta.count` was 0 the unable to determine count error would be thrown incorrectly
