@@ -10,6 +10,11 @@
 
 ## Version History
 
+### v5.0.0
+
+- :tada: Support the `format` tag in the Schema for Dates
+- :rocket: Return Dates as ISO formatted strings to conform to schema
+
 ### v4.6.2
 
 - :bug: Fix the way headers were appended

@@ -2,6 +2,7 @@ import EventEmitter from 'node:events';
 import Err from '@openaddresses/batch-error';
 import rings2geojson from './rings2geojson.js';
 import Fetch from './fetch.js';
+import Schema from './schema.js';
 import { EsriDumpConfigApproach } from '../index.js';
 export default class Geometry extends EventEmitter {
     baseUrl;
@@ -10,6 +11,7 @@ export default class Geometry extends EventEmitter {
     set;
     oidField;
     paths;
+    schema;
     constructor(url, metadata) {
         super();
         this.baseUrl = url;
@@ -18,6 +20,7 @@ export default class Geometry extends EventEmitter {
         this.maxRecords = metadata.maxRecordCount || null;
         this.set = new Set();
         this.oidField = Geometry.findOidField(metadata.fields);
+        this.schema = Schema(metadata);
     }
     async fetch(config) {
         try {
@@ -150,19 +153,27 @@ export default class Geometry extends EventEmitter {
         this.emit('done');
     }
     toGeoJSON(esrifeature) {
+        const id = esrifeature.attributes[this.oidField];
+        const type = 'Feature';
+        const properties = {};
+        for (const prop in esrifeature.attributes) {
+            const schema = this.schema.properties[prop];
+            if (typeof schema !== 'boolean' && schema.format === 'date-time') {
+                properties[prop] = new Date(esrifeature.attributes[prop]).toISOString();
+            }
+            else {
+                properties[prop] = esrifeature.attributes[prop];
+            }
+        }
         if (this.geomType === 'esriGeometryPolygon') {
             return {
-                id: esrifeature.attributes[this.oidField],
-                type: 'Feature',
-                properties: esrifeature.attributes,
+                id, type, properties,
                 geometry: rings2geojson(esrifeature.geometry.rings)
             };
         }
         else if (this.geomType === 'esriGeometryPolyline') {
             return {
-                id: esrifeature.attributes[this.oidField],
-                type: 'Feature',
-                properties: esrifeature.attributes,
+                id, type, properties,
                 geometry: {
                     type: 'MultiLineString',
                     coordinates: esrifeature.geometry.paths
@@ -171,9 +182,7 @@ export default class Geometry extends EventEmitter {
         }
         else if (this.geomType === 'esriGeometryPoint') {
             return {
-                id: esrifeature.attributes[this.oidField],
-                type: 'Feature',
-                properties: esrifeature.attributes,
+                id, type, properties,
                 geometry: {
                     type: 'Point',
                     coordinates: [esrifeature.geometry.x, esrifeature.geometry.y]

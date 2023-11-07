@@ -1,26 +1,23 @@
-import {
-    JSONSchema6,
-    JSONSchema6TypeName
-} from 'json-schema';
+import { JSONSchema6 } from 'json-schema';
 
 // Ref: https://help.arcgis.com/en/sdk/10.0/java_ao_adf/api/arcgiswebservices/com/esri/arcgisws/EsriFieldType.html
-const Types: Map<string, JSONSchema6TypeName> = new Map([
-    ['esriFieldTypeDate', 'string'],
-    ['esriFieldTypeString', 'string'],
-    ['esriFieldTypeDouble', 'number'],
-    ['esriFieldTypeSingle', 'number'],
-    ['esriFieldTypeOID', 'number'],
-    ['esriFieldTypeInteger', 'integer'],
-    ['esriFieldTypeSmallInteger', 'integer'],
-    ['esriFieldTypeGeometry', 'object'],
-    ['esriFieldTypeBlob', 'object'],
-    ['esriFieldTypeGlobalID', 'string'],
-    ['esriFieldTypeRaster', 'object'],
-    ['esriFieldTypeGUID', 'string'],
-    ['esriFieldTypeXML', 'string'],
+const Types: Map<string, JSONSchema6> = new Map([
+    ['esriFieldTypeDate', { type: 'string', format: 'date-time' }],
+    ['esriFieldTypeString', { type: 'string' }],
+    ['esriFieldTypeDouble', { type: 'number' }],
+    ['esriFieldTypeSingle', { type: 'number' }],
+    ['esriFieldTypeOID', { type: 'number' }],
+    ['esriFieldTypeInteger', { type: 'integer' }],
+    ['esriFieldTypeSmallInteger', { type: 'integer' }],
+    ['esriFieldTypeGeometry', { type: 'object' }],
+    ['esriFieldTypeBlob', { type: 'object' }],
+    ['esriFieldTypeGlobalID', { type: 'string' }],
+    ['esriFieldTypeRaster', { type: 'object' }],
+    ['esriFieldTypeGUID', { type: 'string' }],
+    ['esriFieldTypeXML', { type: 'string' }],
 ]);
 
-export default function FieldToSchema(metadata: any) {
+export default function FieldToSchema(metadata: any): JSONSchema6 {
     const doc: JSONSchema6 = {
         type: 'object',
         required: [],
@@ -35,13 +32,13 @@ export default function FieldToSchema(metadata: any) {
     for (const field of metadata.fields) {
         const name = String(field.name);
 
-        const type: JSONSchema6TypeName = Types.has(field.type) ? Types.get(field.type) : 'string';
+        const type: JSONSchema6 = Types.has(field.type) ? Types.get(field.type) : { type: 'string' };
 
         const prop: JSONSchema6 = doc.properties[name] = {
-            type
+            ...JSON.parse(JSON.stringify(type))
         }
 
-        if (!isNaN(field.length) && type === 'string') {
+        if (!isNaN(field.length) && type.type === 'string') {
             prop.maxLength = field.length;
         }
     }
