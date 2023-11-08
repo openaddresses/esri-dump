@@ -17,12 +17,12 @@ test('FeatureServer Schema', async (t) => {
             objectid: { type: 'number' },
             rotation: { type: 'integer' },
             description: { type: 'string', maxLength: 75 },
-            eventdate: { type: 'string', maxLength: 8 },
+            eventdate: { type: 'string', format: 'date-time', maxLength: 8 },
             eventtype: { type: 'integer' },
             created_user: { type: 'string', maxLength: 255 },
-            created_date: { type: 'string', maxLength: 8 },
+            created_date: { type: 'string', format: 'date-time', maxLength: 8 },
             last_edited_user: { type: 'string', maxLength: 255 },
-            last_edited_date: { type: 'string', maxLength: 8 }
+            last_edited_date: { type: 'string', format: 'date-time', maxLength: 8 }
         }
     });
 

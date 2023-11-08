@@ -89,7 +89,10 @@ export default class EsriDump extends EventEmitter {
         }
     }
 
-    async fetch() {
+    async fetch(config?: {
+        map?: (g: Geometry, f: Feature) => Feature
+    }) {
+        if (!config) config = {};
         const metadata = await this.#fetchMeta();
 
         try {
@@ -97,7 +100,9 @@ export default class EsriDump extends EventEmitter {
             geom.fetch(this.config);
 
             geom.on('feature', (feature: Feature) => {
-                this.emit('feature', rewind(feature));
+                feature = rewind(feature) as Feature;
+                if (config.map) feature = config.map(geom, feature);
+                this.emit('feature', feature);
             }).on('error', (error: Err) => {
                 this.emit('error', error);
             }).on('done', () => {
@@ -160,3 +165,8 @@ export default class EsriDump extends EventEmitter {
         return metadata;
     }
 }
+
+export {
+    Geometry
+}
+

@@ -65,13 +65,18 @@ export default class EsriDump extends EventEmitter {
             this.emit('error', err);
         }
     }
-    async fetch() {
+    async fetch(config) {
+        if (!config)
+            config = {};
         const metadata = await this.#fetchMeta();
         try {
             const geom = new Geometry(this.url, metadata);
             geom.fetch(this.config);
             geom.on('feature', (feature) => {
-                this.emit('feature', rewind(feature));
+                feature = rewind(feature);
+                if (config.map)
+                    feature = config.map(geom, feature);
+                this.emit('feature', feature);
             }).on('error', (error) => {
                 this.emit('error', error);
             }).on('done', () => {
@@ -133,4 +138,5 @@ export default class EsriDump extends EventEmitter {
         return metadata;
     }
 }
+export { Geometry };
 //# sourceMappingURL=index.js.map

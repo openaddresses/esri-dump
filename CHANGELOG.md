@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v5.1.0
+
+- :tada: Add optional config parameter with `map` feature for modifying features with full `Geometry` context
+
 ### v5.0.0
 
 - :tada: Support the `format` tag in the Schema for Dates
