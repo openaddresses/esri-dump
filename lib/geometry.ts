@@ -192,7 +192,11 @@ export default class Geometry extends EventEmitter {
         for (const prop in esrifeature.attributes) {
             const schema: JSONSchema6Definition = this.schema.properties[prop];
             
-            if (typeof schema !== 'boolean' && schema.format === 'date-time') {
+            if (
+                typeof schema !== 'boolean'
+                && schema.format === 'date-time'
+                && esrifeature.attributes[prop]
+            ) { 
                 properties[prop] = new Date(esrifeature.attributes[prop]).toISOString();
             } else {
                 properties[prop] = esrifeature.attributes[prop];

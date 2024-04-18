@@ -1,6 +1,5 @@
 import EsriDump from '../index.js';
 import test from 'tape';
-// @ts-ignore
 import geojsonhint from 'geojsonhint';
 import { Feature } from 'geojson';
 

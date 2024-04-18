@@ -1,7 +1,6 @@
 import EsriDump from '../index.js';
 import test from 'tape';
 import { Feature } from 'geojson';
-// @ts-ignore
 import geojsonhint from 'geojsonhint';
 
 test('MapServer with points geometry', (t) => {
