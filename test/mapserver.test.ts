@@ -1,6 +1,7 @@
 import EsriDump from '../index.js';
 import test from 'tape';
 import { Feature } from 'geojson';
+// @ts-expect-error No Type Defs
 import geojsonhint from 'geojsonhint';
 
 test('MapServer with points geometry', (t) => {
