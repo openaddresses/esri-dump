@@ -1,6 +1,6 @@
 import EsriDump from '../index.js';
 import test from 'tape';
-// @ts-ignore
+// @ts-expect-error No Type Defs
 import geojsonhint from 'geojsonhint';
 import { Feature } from 'geojson';
 

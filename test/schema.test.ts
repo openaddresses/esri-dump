@@ -1,6 +1,5 @@
 import EsriDump from '../index.js';
 import test from 'tape';
-// @ts-ignore
 
 test('FeatureServer Schema', async (t) => {
     const url = 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Wildfire/FeatureServer/0';
