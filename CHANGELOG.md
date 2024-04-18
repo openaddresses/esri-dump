@@ -10,6 +10,12 @@
 
 ## Version History
 
+### v5.2.0
+
+- :bug: Fix `null` parsing as date in geometry parser
+- :rocket: Switch to Flat Config ESLint
+- :arrow_up: Update Core Deps
+
 ### v5.1.0
 
 - :tada: Add optional config parameter with `map` feature for modifying features with full `Geometry` context
