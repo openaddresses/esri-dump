@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v5.3.0
+
+- :bug: If no `esriFeature.geometry` is returned, skip the Feature
+
 ### v5.2.0
 
 - :bug: Fix `null` parsing as date in geometry parser

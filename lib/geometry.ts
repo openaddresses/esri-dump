@@ -104,7 +104,14 @@ export default class Geometry extends EventEmitter {
                     for (const feature of data.features) {
                         if (!this.set.has(feature.attributes[this.oidField])) {
                             this.set.add(feature.attributes[this.oidField]);
-                            this.emit('feature', this.toGeoJSON(feature));
+
+                            try {
+                                const feat = this.toGeoJSON(feature);
+                                this.emit('feature', feat)
+                            } catch (err) {
+                                // This usually errors if it's an attribute only feature
+                                if (process.env.DEBUG) console.error('Invalid Feature', feature);
+                            }
                         }
                     }
 
@@ -166,7 +173,13 @@ export default class Geometry extends EventEmitter {
                         for (const feature of data.features) {
                             if (!this.set.has(feature.attributes[this.oidField])) {
                                 this.set.add(feature.attributes[this.oidField]);
-                                this.emit('feature', this.toGeoJSON(feature));
+                                try {
+                                    const feat = this.toGeoJSON(feature);
+                                    this.emit('feature', feat)
+                                } catch (err) {
+                                    // This usually errors if it's an attribute only feature
+                                    if (process.env.DEBUG) console.error('Invalid Feature', feature);
+                                }
                             }
                         }
                     }
@@ -191,12 +204,12 @@ export default class Geometry extends EventEmitter {
         const properties: GeoJsonProperties = {}
         for (const prop in esrifeature.attributes) {
             const schema: JSONSchema6Definition = this.schema.properties[prop];
-            
+
             if (
                 typeof schema !== 'boolean'
                 && schema.format === 'date-time'
                 && esrifeature.attributes[prop]
-            ) { 
+            ) {
                 properties[prop] = new Date(esrifeature.attributes[prop]).toISOString();
             } else {
                 properties[prop] = esrifeature.attributes[prop];
