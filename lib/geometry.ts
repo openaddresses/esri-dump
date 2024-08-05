@@ -69,7 +69,9 @@ export default class Geometry extends EventEmitter {
         if (!res.ok) return this.emit('error', await res.text());
 
         const meta = await res.json();
-        if (isNaN(meta.count)) this.emit('error', 'Unable to determine feature count');
+        if (isNaN(meta.count)) {
+            return this.emit(`error', 'Unable to determine feature count - ${JSON.stringify(meta)}`);
+        }
 
         const count = meta.count;
         let curr = 0;

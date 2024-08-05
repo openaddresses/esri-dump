@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v5.4.0
+
+- :rocket: Surface upstream response if no count is present
+
 ### v5.3.0
 
 - :bug: If no `esriFeature.geometry` is returned, skip the Feature
