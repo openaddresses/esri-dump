@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v5.5.0
+
+- :rocket: Allow QueryTopFeatures option
+
 ### v5.4.0
 
 - :rocket: Surface upstream response if no count is present
