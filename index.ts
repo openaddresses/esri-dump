@@ -14,7 +14,9 @@ const SUPPORTED = ['FeatureServer', 'MapServer'];
 
 export enum EsriDumpConfigApproach {
     BBOX = 'bbox',
-    ITER = 'iter'
+    ITER = 'iter',
+    TOP_FEATURES_BBOX = 'top_features_bbox',
+    TOP_FEATURES_ITER = 'top_features_iter',
 }
 
 export enum EsriResourceType {

@@ -33,7 +33,10 @@ export default class Geometry extends EventEmitter {
     paths: Path[];
     schema: JSONSchema6;
 
-    constructor(url: URL, metadata: any) {
+    constructor(
+        url: URL,
+        metadata: any
+    ) {
         super();
 
         this.baseUrl = url;
@@ -48,9 +51,13 @@ export default class Geometry extends EventEmitter {
 
     async fetch(config: EsriDumpConfig) {
         try {
-            if (config.approach === EsriDumpConfigApproach.BBOX) await this.fetch_bbox(config);
-            else if (config.approach === EsriDumpConfigApproach.ITER) await this.fetch_iter(config);
-            else throw new Err(400, null, 'Unknown Approach');
+            if (config.approach === EsriDumpConfigApproach.BBOX || EsriDumpConfigApproach.TOP_FEATURES_BBOX) {
+                await this.fetch_bbox(config);
+            } else if (config.approach === EsriDumpConfigApproach.ITER || EsriDumpConfigApproach.TOP_FEATURES_ITER) {
+                await this.fetch_iter(config);
+            } else {
+                throw new Err(400, null, 'Unknown Approach');
+            }
         } catch (err) {
             this.emit('error', err);
         }
@@ -59,7 +66,9 @@ export default class Geometry extends EventEmitter {
     async fetch_iter(config: EsriDumpConfig) {
         if (!this.oidField) this.emit('error', new Err(400, null, 'Cannot use iter function as oidField could not be determined'));
 
-        const url = new URL(String(this.baseUrl) + '/query');
+        const queryFragment = config.approach === EsriDumpConfigApproach.TOP_FEATURES_ITER ? '/queryTopFeatures' : '/query';
+
+        const url = new URL(String(this.baseUrl) + queryFragment);
         url.searchParams.append('returnCountOnly', 'true');
         if (!config.params.where) url.searchParams.append('where', '1=1');
 
@@ -79,7 +88,7 @@ export default class Geometry extends EventEmitter {
         while (curr < count) {
             let attempts = 0;
 
-            const url = new URL(String(this.baseUrl) + '/query');
+            const url = new URL(String(this.baseUrl) + queryFragment);
             if (!config.params.where) url.searchParams.append('where', '1=1');
             url.searchParams.append('geometryPrecision', '7');
             url.searchParams.append('returnGeometry', 'true');
@@ -112,7 +121,7 @@ export default class Geometry extends EventEmitter {
                                 this.emit('feature', feat)
                             } catch (err) {
                                 // This usually errors if it's an attribute only feature
-                                if (process.env.DEBUG) console.error('Invalid Feature', feature);
+                                if (process.env.DEBUG) console.error('Invalid Feature', feature, err instanceof Error ? err.message : err);
                             }
                         }
                     }
@@ -132,10 +141,12 @@ export default class Geometry extends EventEmitter {
     }
 
     async fetch_bbox(config: EsriDumpConfig) {
+        const queryFragment = config.approach === EsriDumpConfigApproach.TOP_FEATURES_BBOX ? '/queryTopFeatures' : '/query';
+
         while (this.paths.length) {
             const bounds = this.paths.pop();
 
-            const url = new URL(String(this.baseUrl) + '/query');
+            const url = new URL(String(this.baseUrl) + queryFragment);
             url.searchParams.append('geometry', [bounds.xmin, bounds.ymin, bounds.xmax, bounds.ymax].join(','));
             url.searchParams.append('geometryType', 'esriGeometryEnvelope');
             url.searchParams.append('spatialRel', 'esriSpatialRelIntersects');
@@ -180,7 +191,7 @@ export default class Geometry extends EventEmitter {
                                     this.emit('feature', feat)
                                 } catch (err) {
                                     // This usually errors if it's an attribute only feature
-                                    if (process.env.DEBUG) console.error('Invalid Feature', feature);
+                                    if (process.env.DEBUG) console.error('Invalid Feature', feature, err instanceof Error ? err.message : err);
                                 }
                             }
                         }

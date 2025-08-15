@@ -26,17 +26,16 @@
         "@types/geojson": "^7946.0.10",
         "@types/minimist": "^1.2.2",
         "@types/tape": "^5.0.0",
-        "eslint": "^8.36.0",
+        "eslint": "^9.0.0",
         "geojsonhint": "^2.0.0",
         "tape": "^5.0.0",
         "ts-node": "^10.9.1",
         "ts-node-test": "^0.4.1",
         "typescript": "^5.0.4",
-        "typescript-eslint": "^7.7.0"
+        "typescript-eslint": "^8.0.0"
     },
     "dependencies": {
         "@openaddresses/batch-error": "^2.2.0",
-        "@types/express": "^4.17.17",
         "@types/json-schema": "^7.0.12",
         "minimist": "^1.2.8"
     }
