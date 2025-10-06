@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v5.5.1
+
+- :bug: Fix ESRI Dump Approach config
+
 ### v5.5.0
 
 - :rocket: Allow QueryTopFeatures option

@@ -51,9 +51,14 @@ export default class Geometry extends EventEmitter {
 
     async fetch(config: EsriDumpConfig) {
         try {
-            if (config.approach === EsriDumpConfigApproach.BBOX || EsriDumpConfigApproach.TOP_FEATURES_BBOX) {
+            if (
+                config.approach === EsriDumpConfigApproach.BBOX
+                    || config.approach === EsriDumpConfigApproach.TOP_FEATURES_BBOX
+            ) {
                 await this.fetch_bbox(config);
-            } else if (config.approach === EsriDumpConfigApproach.ITER || EsriDumpConfigApproach.TOP_FEATURES_ITER) {
+            } else if (config.approach === EsriDumpConfigApproach.ITER
+                || config.approach === EsriDumpConfigApproach.TOP_FEATURES_ITER
+            ) {
                 await this.fetch_iter(config);
             } else {
                 throw new Err(400, null, 'Unknown Approach');
