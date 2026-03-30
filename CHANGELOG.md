@@ -10,6 +10,13 @@
 
 ## Version History
 
+### v6.0.0 - 2026-03-30
+
+- :rocket: Add TileJSON Fragment support
+- :arrow_up: Remove `minimist` in favour of core utils for CLI parsing
+- :arrow_up: remove `tape` in favour of `node:test` and `node:assert` for testing
+- :arrow_up: Update all other dependencies
+
 ### v5.5.1
 
 - :bug: Fix ESRI Dump Approach config

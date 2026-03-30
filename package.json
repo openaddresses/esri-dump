@@ -11,7 +11,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git://github.com/openaddresses/esri-dump.git"
+        "url": "git+https://github.com/openaddresses/esri-dump.git"
     },
     "bin": {
         "esri-dump": "./dist/cli.js"
