@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v6.1.0 - 2026-03-30
+
+- :rocket: Enable TS Strict Mode
+
 ### v6.0.1 - 2026-03-30
 
 - :bug: Ensure center coordinate has no elevation
