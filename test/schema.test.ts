@@ -1,14 +1,15 @@
 import EsriDump from '../index.js';
-import test from 'tape';
+import assert from 'node:assert/strict';
+import test from 'node:test';
 
-test('FeatureServer Schema', async (t) => {
+test('FeatureServer Schema', async () => {
     const url = 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Wildfire/FeatureServer/0';
 
     const esri = new EsriDump(url);
     const schema = await esri.schema();
 
 
-    t.deepEquals(schema, {
+    assert.deepEqual(schema, {
         type: 'object',
         required: [],
         additionalProperties: false,
@@ -24,6 +25,4 @@ test('FeatureServer Schema', async (t) => {
             last_edited_date: { type: 'string', format: 'date-time', maxLength: 8 }
         }
     });
-
-    t.end();
 });

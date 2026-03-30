@@ -1,10 +1,11 @@
 import EsriDump from '../index.js';
-import test from 'tape';
+import assert from 'node:assert/strict';
+import test from 'node:test';
 // @ts-expect-error No Type Defs
 import geojsonhint from 'geojsonhint';
 import { Feature } from 'geojson';
 
-test('FeatureServer with points geometry', (t) => {
+test('FeatureServer with points geometry', async () => {
     const url = 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Wildfire/FeatureServer/0';
     const data: {
         type: string,
@@ -15,33 +16,29 @@ test('FeatureServer with points geometry', (t) => {
     };
 
     const esri = new EsriDump(url);
-    esri.fetch();
+    await new Promise<void>((resolve, reject) => {
+        esri.on('type', (type) => {
+            assert.equal(type, 'FeatureServer', 'recognizes FeatureServer');
+        });
 
-    esri.on('type', (type) => {
-        t.equals(type, 'FeatureServer', 'recognizes FeatureServer');
-    });
+        esri.on('feature', (feature) => {
+            data.features.push(feature);
+        });
 
-    esri.on('feature', (feature) => {
-        data.features.push(feature);
-    });
+        esri.on('error', reject);
 
-    esri.on('error', (err) => {
-        throw err;
-    });
+        esri.on('done', () => {
+            const errors = geojsonhint.hint(data);
+            assert.equal(errors.length, 0, 'GeoJSON valid');
+            assert.ok(data.features.length > 1);
+            resolve();
+        });
 
-    esri.on('done', () => {
-        const errors = geojsonhint.hint(data);
-        t.ok(errors.length === 0, 'GeoJSON valid');
-
-        t.ok(data.features.length > 1);
-
-        t.end();
+        esri.fetch();
     });
 });
 
-test('FeatureServer with polygon geometry', (t) => {
-    t.plan(2);
-
+test('FeatureServer with polygon geometry', async () => {
     const url = 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Wildfire/FeatureServer/2';
     const data: {
         type: string,
@@ -52,26 +49,24 @@ test('FeatureServer with polygon geometry', (t) => {
     };
 
     const esri = new EsriDump(url);
-    esri.fetch();
+    await new Promise<void>((resolve, reject) => {
+        esri.on('type', (type) => {
+            assert.equal(type, 'FeatureServer', 'recognizes FeatureServer');
+        });
 
-    esri.on('type', (type) => {
-        t.equals(type, 'FeatureServer', 'recognizes FeatureServer');
-    });
+        esri.on('feature', (feature) => {
+            data.features.push(feature);
+        });
 
-    esri.on('feature', (feature) => {
-        data.features.push(feature);
-    });
+        esri.on('error', reject);
 
-    esri.on('error', (err) => {
-        throw err;
-    });
+        esri.on('done', () => {
+            const errors = geojsonhint.hint(data);
+            assert.equal(errors.length, 0, 'GeoJSON valid');
+            assert.ok(data.features.length > 1);
+            resolve();
+        });
 
-    esri.on('done', () => {
-        const errors = geojsonhint.hint(data);
-        t.ok(errors.length === 0, 'GeoJSON valid');
-
-        t.ok(data.features.length > 1);
-
-        t.end();
+        esri.fetch();
     });
 });
