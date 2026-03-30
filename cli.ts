@@ -1,13 +1,38 @@
-#!/usr/bin/env node
-import EsriDump from './index.js';
-import minimist from 'minimist';
+#!/usr/bin/env tsx
 
-const argv = minimist(process.argv, {
-    string: ['approach', 'header'],
-    boolean: ['help']
+import { parseArgs } from 'node:util';
+import EsriDump, { EsriDumpConfigApproach } from './index.js';
+
+function parseApproach(value?: string): EsriDumpConfigApproach | undefined {
+    if (!value) return undefined;
+
+    if (Object.values(EsriDumpConfigApproach).includes(value as EsriDumpConfigApproach)) {
+        return value as EsriDumpConfigApproach;
+    }
+
+    throw new Error(`Unknown approach: ${value}`);
+}
+
+const argv = parseArgs({
+    args: process.argv.slice(2),
+    allowPositionals: true,
+    options: {
+        help: {
+            type: 'boolean',
+            default: false
+        },
+        approach: {
+            type: 'string'
+        },
+        header: {
+            type: 'string',
+            multiple: true,
+            default: []
+        }
+    }
 });
 
-if (argv.help) {
+if (argv.values.help) {
     console.log();
     console.log('Usage:');
     console.log('  node cli.js [mode] [--help]');
@@ -24,34 +49,34 @@ if (argv.help) {
     console.log('                             faster but not supported by all servers');
     console.log('Mode: schema <url>');
     console.log('  Return a JSON Schema for a given layer');
+    console.log('Mode: tilejson <url>');
+    console.log('  Return a TileJSON Fragment for a given layer');
     console.log('Mode: discover <url>');
     console.log('  Locate all geospatial layers on a given server');
     console.log();
     process.exit();
 }
 
-if (!argv._[2]) throw new Error('Mode required');
+const mode = argv.positionals[0];
+if (!mode) throw new Error('Mode required');
 
-const url = argv._[3];
+const url = argv.positionals[1];
 if (!url) throw new Error('url required');
 
-const headers: any = {};
-if (argv.header) {
-    if (typeof argv.header === 'string') argv.header = [ argv.header ];
-    for (const header of argv.header) {
+const headers: Record<string, string> = {};
+for (const header of argv.values.header) {
         const parsed = header.split('=');
         headers[parsed[0]] = parsed.slice(1, parsed.length).join('=');
-    }
 }
 
 
 const esri = new EsriDump(url, {
-    approach: argv.approach,
+    approach: parseApproach(argv.values.approach),
     headers
 });
 
 
-if (argv._[2] === 'fetch') {
+if (mode === 'fetch') {
     esri.on('error', (err) => {
         console.error(err);
     }).on('feature', (feature) => {
@@ -59,9 +84,11 @@ if (argv._[2] === 'fetch') {
     });
 
     await esri.fetch();
-} else if (argv._[2] === 'schema') {
+} else if (mode === 'schema') {
     console.log(JSON.stringify(await esri.schema(), null, 4));
-} else if (argv._[2] === 'discover') {
+} else if (mode === 'tilejson') {
+    console.log(JSON.stringify(await esri.tilejson(), null, 4));
+} else if (mode === 'discover') {
     esri.on('error', (err) => {
         console.error(err);
     }).on('service', (service) => {

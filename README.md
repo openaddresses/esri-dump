@@ -43,6 +43,8 @@ esri.on('done', () => {
 esri.on('error', (err) => {
     doSomething(err);
 });
+
+const tilejson = await esri.tilejson();
 ```
 
 ## Command Line

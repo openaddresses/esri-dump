@@ -1,7 +1,4 @@
 {
-    "ts-node": {
-        "esm": true
-    },
     "compilerOptions": {
         "module": "es2022",
         "esModuleInterop": true,

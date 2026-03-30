@@ -5,7 +5,7 @@
     "author": "Ian Dees <ian.dees@gmail.com>",
     "description": "Assist with pulling data out of an ESRI ArcGIS REST server into a more useful format.",
     "scripts": {
-        "test": "ts-node-test test/",
+        "test": "tsx --test test/*.test.ts",
         "build": "tsc --build",
         "lint": "eslint *.ts test/*.ts lib/*.ts"
     },
@@ -20,23 +20,20 @@
     "types": "index.ts",
     "license": "MIT",
     "engines": {
-        "node": ">=18"
+        "node": ">=24"
     },
     "devDependencies": {
+        "@eslint/js": "^10.0.1",
         "@types/geojson": "^7946.0.10",
-        "@types/minimist": "^1.2.2",
-        "@types/tape": "^5.0.0",
-        "eslint": "^9.0.0",
+        "eslint": "^10.0.0",
         "geojsonhint": "^2.0.0",
-        "tape": "^5.0.0",
-        "ts-node": "^10.9.1",
-        "ts-node-test": "^0.4.1",
+        "tsx": "^4.20.6",
         "typescript": "^5.0.4",
         "typescript-eslint": "^8.0.0"
     },
     "dependencies": {
         "@openaddresses/batch-error": "^2.2.0",
         "@types/json-schema": "^7.0.12",
-        "minimist": "^1.2.8"
+        "proj4": "^2.20.4"
     }
 }

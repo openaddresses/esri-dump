@@ -6,11 +6,12 @@ import { Feature } from 'geojson';
 import Err from '@openaddresses/batch-error';
 import rewind from './lib/rewind.js';
 import Schema from './lib/schema.js';
+import TileJSON from './lib/tilejson.js';
 import {
     JSONSchema6,
 } from 'json-schema';
 
-const SUPPORTED = ['FeatureServer', 'MapServer'];
+const SUPPORTED = ['FeatureServer', 'MapServer', 'ImageServer'];
 
 export enum EsriDumpConfigApproach {
     BBOX = 'bbox',
@@ -21,7 +22,8 @@ export enum EsriDumpConfigApproach {
 
 export enum EsriResourceType {
     FeatureServer = 'FeatureServer',
-    MapServer = 'MapServer'
+    MapServer = 'MapServer',
+    ImageServer = 'ImageServer'
 }
 
 export interface EsriDumpConfigInput {
@@ -62,13 +64,26 @@ export default class EsriDump extends EventEmitter {
         const known = SUPPORTED[occurrence.indexOf(Math.max.apply(null, occurrence))];
         if (known === 'MapServer') this.resourceType = EsriResourceType.MapServer;
         else if (known === 'FeatureServer') this.resourceType = EsriResourceType.FeatureServer;
+        else if (known === 'ImageServer') this.resourceType = EsriResourceType.ImageServer;
         else throw new Err(400, null, 'Unknown or unsupported ESRI URL Format');
 
         this.emit('type', this.resourceType);
     }
 
+    async tilejson(): Promise<ReturnType<typeof TileJSON>> {
+        const metadata = await this.#fetchMeta(false);
+
+        return TileJSON(metadata, {
+            resourceType: this.resourceType
+        });
+    }
+
+    async TileJSONFragment(): Promise<ReturnType<typeof TileJSON>> {
+        return await this.tilejson();
+    }
+
     async schema(): Promise<JSONSchema6> {
-        const metadata = await this.#fetchMeta();
+        const metadata = await this.#fetchMeta(false);
         return Schema(metadata);
     }
 
@@ -115,7 +130,7 @@ export default class EsriDump extends EventEmitter {
         }
     }
 
-    async #fetchMeta() {
+    async #fetchMeta(requireGeometry=true) {
         const url = new URL(this.url);
 
         if (process.env.DEBUG) console.error(String(url));
@@ -128,7 +143,7 @@ export default class EsriDump extends EventEmitter {
 
         if (metadata.error) {
             return this.emit('error', new Err(400, null, 'Server metadata error: ' + metadata.error.message));
-        } else if (metadata.capabilities && metadata.capabilities.indexOf('Query') === -1 ) {
+        } else if (requireGeometry && metadata.capabilities && metadata.capabilities.indexOf('Query') === -1 ) {
             return this.emit('error', new Err(400, null, 'Layer doesn\'t support query operation.'));
         } else if (metadata.folders || metadata.services) {
             let errorMessage = 'Endpoint provided is not a Server resource.\n';
@@ -156,9 +171,9 @@ export default class EsriDump extends EventEmitter {
 
         this.geomType = metadata.geometryType;
 
-        if (!this.geomType) {
+        if (requireGeometry && !this.geomType) {
             return this.emit('error', new Err(400, null, 'no geometry'));
-        } else if (!metadata.extent) {
+        } else if (!metadata.extent && !metadata.initialExtent && !metadata.fullExtent) {
             return this.emit('error', new Err(400, null, 'Layer doesn\'t list an extent.'));
         } else if ('subLayers' in metadata && metadata.subLayers.length > 0) {
             return this.emit('error', new Err(400, null, 'Specified layer has sublayers.'));

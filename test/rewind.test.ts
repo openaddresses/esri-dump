@@ -1,7 +1,8 @@
 import rewind from '../lib/rewind.js';
+import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import test, {Test} from 'tape';
+import test from 'node:test';
 
 const base = new URL(path.parse(import.meta.url).dir).pathname;
 
@@ -9,28 +10,26 @@ function f(_: string) {
     return JSON.parse(fs.readFileSync(_, 'utf8'));
 }
 
-function fixture(t: Test, name: string, title: string) {
+function fixture(name: string, title: string) {
     const result = rewind(f(name));
     const outputName = name.replace('.input.', '.output.');
     if (process.env.UPDATE) {
         fs.writeFileSync(outputName, JSON.stringify(result, null, 4));
     }
     const expect = f(outputName);
-    t.deepEqual(result, expect, title);
+    assert.deepEqual(result, expect, title);
 }
 
-test('rewind', (t) => {
-    fixture(t, base + '/fixtures/rewind/featuregood.input.geojson', 'feature-good');
-    fixture(t, base + '/fixtures/rewind/flip.input.geojson', 'flip');
-    fixture(t, base + '/fixtures/rewind/collection.input.geojson', 'feature-collection');
-    fixture(t, base + '/fixtures/rewind/geomcollection.input.geojson', 'geometry-collection');
-    fixture(t, base + '/fixtures/rewind/multipolygon.input.geojson', 'multipolygon');
-    fixture(t, base + '/fixtures/rewind/rev.input.geojson', 'rev');
-    fixture(t, base + '/fixtures/rewind/near-zero.input.geojson', 'near-zero');
-    t.end();
+test('rewind', () => {
+    fixture(base + '/fixtures/rewind/featuregood.input.geojson', 'feature-good');
+    fixture(base + '/fixtures/rewind/flip.input.geojson', 'flip');
+    fixture(base + '/fixtures/rewind/collection.input.geojson', 'feature-collection');
+    fixture(base + '/fixtures/rewind/geomcollection.input.geojson', 'geometry-collection');
+    fixture(base + '/fixtures/rewind/multipolygon.input.geojson', 'multipolygon');
+    fixture(base + '/fixtures/rewind/rev.input.geojson', 'rev');
+    fixture(base + '/fixtures/rewind/near-zero.input.geojson', 'near-zero');
 });
 
-test('passthrough', (t) => {
-    t.equal(rewind(null), null);
-    t.end();
+test('passthrough', () => {
+    assert.equal(rewind(null), null);
 });
