@@ -1,63 +1,38 @@
-#!/usr/bin/env node
-import EsriDump from './index.js';
+#!/usr/bin/env tsx
 
-interface CliArgs {
-    help: boolean;
-    approach?: string;
-    header: string[];
-    positionals: string[];
-}
+import { parseArgs } from 'node:util';
+import EsriDump, { EsriDumpConfigApproach } from './index.js';
 
-function parseArgs(args: string[]): CliArgs {
-    const parsed: CliArgs = {
-        help: false,
-        header: [],
-        positionals: []
-    };
+function parseApproach(value?: string): EsriDumpConfigApproach | undefined {
+    if (!value) return undefined;
 
-    for (let index = 0; index < args.length; index++) {
-        const arg = args[index];
-
-        if (arg === '--help') {
-            parsed.help = true;
-            continue;
-        }
-
-        if (arg === '--approach') {
-            const value = args[index + 1];
-            if (!value || value.startsWith('--')) throw new Error('--approach requires a value');
-            parsed.approach = value;
-            index++;
-            continue;
-        }
-
-        if (arg.startsWith('--approach=')) {
-            parsed.approach = arg.slice('--approach='.length);
-            continue;
-        }
-
-        if (arg === '--header') {
-            const value = args[index + 1];
-            if (!value || value.startsWith('--')) throw new Error('--header requires a value');
-            parsed.header.push(value);
-            index++;
-            continue;
-        }
-
-        if (arg.startsWith('--header=')) {
-            parsed.header.push(arg.slice('--header='.length));
-            continue;
-        }
-
-        parsed.positionals.push(arg);
+    if (Object.values(EsriDumpConfigApproach).includes(value as EsriDumpConfigApproach)) {
+        return value as EsriDumpConfigApproach;
     }
 
-    return parsed;
+    throw new Error(`Unknown approach: ${value}`);
 }
 
-const argv = parseArgs(process.argv.slice(2));
+const argv = parseArgs({
+    args: process.argv.slice(2),
+    allowPositionals: true,
+    options: {
+        help: {
+            type: 'boolean',
+            default: false
+        },
+        approach: {
+            type: 'string'
+        },
+        header: {
+            type: 'string',
+            multiple: true,
+            default: []
+        }
+    }
+});
 
-if (argv.help) {
+if (argv.values.help) {
     console.log();
     console.log('Usage:');
     console.log('  node cli.js [mode] [--help]');
@@ -89,14 +64,14 @@ const url = argv.positionals[1];
 if (!url) throw new Error('url required');
 
 const headers: Record<string, string> = {};
-for (const header of argv.header) {
+for (const header of argv.values.header) {
         const parsed = header.split('=');
         headers[parsed[0]] = parsed.slice(1, parsed.length).join('=');
 }
 
 
 const esri = new EsriDump(url, {
-    approach: argv.approach,
+    approach: parseApproach(argv.values.approach),
     headers
 });
 
