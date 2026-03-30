@@ -20,7 +20,7 @@
     "types": "index.ts",
     "license": "MIT",
     "engines": {
-        "node": ">=18"
+        "node": ">=24"
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",
