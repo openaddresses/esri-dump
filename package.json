@@ -23,10 +23,11 @@
         "node": ">=18"
     },
     "devDependencies": {
+        "@eslint/js": "^10.0.1",
         "@types/geojson": "^7946.0.10",
         "@types/minimist": "^1.2.2",
         "@types/tape": "^5.0.0",
-        "eslint": "^9.0.0",
+        "eslint": "^10.0.0",
         "geojsonhint": "^2.0.0",
         "tape": "^5.0.0",
         "ts-node": "^10.9.1",
@@ -37,6 +38,7 @@
     "dependencies": {
         "@openaddresses/batch-error": "^2.2.0",
         "@types/json-schema": "^7.0.12",
-        "minimist": "^1.2.8"
+        "minimist": "^1.2.8",
+        "proj4": "^2.20.4"
     }
 }

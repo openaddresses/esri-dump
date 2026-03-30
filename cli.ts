@@ -24,6 +24,8 @@ if (argv.help) {
     console.log('                             faster but not supported by all servers');
     console.log('Mode: schema <url>');
     console.log('  Return a JSON Schema for a given layer');
+    console.log('Mode: tilejson <url>');
+    console.log('  Return a TileJSON Fragment for a given layer');
     console.log('Mode: discover <url>');
     console.log('  Locate all geospatial layers on a given server');
     console.log();
@@ -61,6 +63,8 @@ if (argv._[2] === 'fetch') {
     await esri.fetch();
 } else if (argv._[2] === 'schema') {
     console.log(JSON.stringify(await esri.schema(), null, 4));
+} else if (argv._[2] === 'tilejson') {
+    console.log(JSON.stringify(await esri.tilejson(), null, 4));
 } else if (argv._[2] === 'discover') {
     esri.on('error', (err) => {
         console.error(err);
