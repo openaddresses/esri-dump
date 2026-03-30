@@ -146,6 +146,7 @@ export default function (rings: number[][][]): Geometry {
     while (holes.length) {
         // pop a hole off out stack
         const hole = holes.pop();
+        if (!hole) continue;
         let matched = false;
 
         // loop over all outer rings and see if they contain our hole.

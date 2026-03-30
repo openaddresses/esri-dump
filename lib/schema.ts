@@ -18,25 +18,26 @@ const Types: Map<string, JSONSchema6> = new Map([
 ]);
 
 export default function FieldToSchema(metadata: any): JSONSchema6 {
+    const properties: Record<string, JSONSchema6> = {};
     const doc: JSONSchema6 = {
         type: 'object',
         required: [],
         additionalProperties: false,
-        properties: {}
-    }
+        properties
+    };
 
-    if (!metadata.fields && !Array.isArray(metadata.fields)) {
+    if (!metadata.fields || !Array.isArray(metadata.fields)) {
         return doc;
     }
 
     for (const field of metadata.fields) {
         const name = String(field.name);
 
-        const type: JSONSchema6 = Types.has(field.type) ? Types.get(field.type) : { type: 'string' };
+        const type: JSONSchema6 = Types.get(field.type) ?? { type: 'string' };
 
-        const prop: JSONSchema6 = doc.properties[name] = {
+        const prop: JSONSchema6 = properties[name] = {
             ...JSON.parse(JSON.stringify(type))
-        }
+        };
 
         if (!isNaN(field.length) && type.type === 'string') {
             prop.maxLength = field.length;

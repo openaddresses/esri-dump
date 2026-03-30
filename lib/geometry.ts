@@ -150,6 +150,7 @@ export default class Geometry extends EventEmitter {
 
         while (this.paths.length) {
             const bounds = this.paths.pop();
+            if (!bounds) continue;
 
             const url = new URL(String(this.baseUrl) + queryFragment);
             url.searchParams.append('geometry', [bounds.xmin, bounds.ymin, bounds.xmax, bounds.ymax].join(','));
@@ -219,9 +220,10 @@ export default class Geometry extends EventEmitter {
     toGeoJSON(esrifeature: any): Feature {
         const id = esrifeature.attributes[this.oidField];
         const type = 'Feature';
-        const properties: GeoJsonProperties = {}
+        const properties: GeoJsonProperties = {};
+        const schemaProperties = this.schema.properties || {};
         for (const prop in esrifeature.attributes) {
-            const schema: JSONSchema6Definition = this.schema.properties[prop];
+            const schema: JSONSchema6Definition = schemaProperties[prop];
 
             if (
                 typeof schema !== 'boolean'
@@ -256,6 +258,8 @@ export default class Geometry extends EventEmitter {
                 }
             };
         }
+
+        throw new Err(400, null, `Unsupported geometry type: ${this.geomType}`);
     }
 
     static splitBbox(bbox: Path): Path[] {
