@@ -31,7 +31,7 @@ export interface TileJSONDocument {
     description?: string;
     attribution?: string;
     bounds?: [number, number, number, number];
-    center?: [number, number, number];
+    center?: [number, number];
     minzoom: number;
     maxzoom: number;
     vector_layers?: TileJSONVectorLayer[];
@@ -207,8 +207,7 @@ export default function TileJSON(
         doc.bounds = bounds;
         doc.center = [
             (bounds[0] + bounds[2]) / 2,
-            (bounds[1] + bounds[3]) / 2,
-            minzoom
+            (bounds[1] + bounds[3]) / 2
         ];
     }
 

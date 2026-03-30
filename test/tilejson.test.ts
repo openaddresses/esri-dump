@@ -68,7 +68,7 @@ test('TileJSON builds a vector document from vector metadata', () => {
     approx(doc.bounds![3], expectedBounds[3], 0.000001, 'max lat');
     approx(doc.center![0], (expectedBounds[0] + expectedBounds[2]) / 2, 0.000001, 'center lon');
     approx(doc.center![1], (expectedBounds[1] + expectedBounds[3]) / 2, 0.000001, 'center lat');
-    assert.equal(doc.center![2], doc.minzoom, 'center zoom defaults to minzoom');
+    assert.equal(doc.center!.length, 2, 'center omits zoom coordinate');
 });
 
 test('TileJSON builds a raster document from ImageServer metadata', () => {
@@ -134,6 +134,7 @@ test('EsriDump exposes tilejson() for ImageServer endpoints', async () => {
                 assert.equal(doc.name, 'image/images');
                 assert.ok(Array.isArray(doc.bounds), 'includes bounds');
                 assert.ok(Array.isArray(doc.center), 'includes center');
+                assert.equal(doc.center.length, 2, 'center omits zoom coordinate');
 
                 stop(resolve);
             } catch (err) {

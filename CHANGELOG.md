@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v6.0.1 - 2026-03-30
+
+- :bug: Ensure center coordinate has no elevation
+
 ### v6.0.0 - 2026-03-30
 
 - :rocket: Add TileJSON Fragment support
