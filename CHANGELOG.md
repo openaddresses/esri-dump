@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v6.1.1 - 2026-03-31
+
+- :bug: Include WKID.json in dist
+
 ### v6.1.0 - 2026-03-30
 
 - :rocket: Enable TS Strict Mode
