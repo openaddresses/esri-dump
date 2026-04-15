@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 // @ts-expect-error No Type Defs
 import geojsonhint from 'geojsonhint';
-import { Feature } from 'geojson';
+import type { Feature } from 'geojson';
 
 test('FeatureServer with points geometry', async () => {
     const url = 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Wildfire/FeatureServer/0';

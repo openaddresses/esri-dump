@@ -51,6 +51,8 @@ if (argv.values.help) {
     console.log('  Return a JSON Schema for a given layer');
     console.log('Mode: tilejson <url>');
     console.log('  Return a TileJSON Fragment for a given layer');
+    console.log('Mode: stylejson <url>');
+    console.log('  Return a MapLibre Style for a given layer');
     console.log('Mode: discover <url>');
     console.log('  Locate all geospatial layers on a given server');
     console.log();
@@ -88,6 +90,8 @@ if (mode === 'fetch') {
     console.log(JSON.stringify(await esri.schema(), null, 4));
 } else if (mode === 'tilejson') {
     console.log(JSON.stringify(await esri.tilejson(), null, 4));
+} else if (mode === 'stylejson') {
+    console.log(JSON.stringify(await esri.stylejson(), null, 4));
 } else if (mode === 'discover') {
     esri.on('error', (err) => {
         console.error(err);

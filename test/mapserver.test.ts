@@ -1,7 +1,7 @@
 import EsriDump from '../index.js';
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { Feature } from 'geojson';
+import type { Feature } from 'geojson';
 // @ts-expect-error No Type Defs
 import geojsonhint from 'geojsonhint';
 

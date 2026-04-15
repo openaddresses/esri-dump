@@ -1,4 +1,4 @@
-import { JSONSchema6 } from 'json-schema';
+import type { JSONSchema6 } from 'json-schema';
 
 // Ref: https://help.arcgis.com/en/sdk/10.0/java_ao_adf/api/arcgiswebservices/com/esri/arcgisws/EsriFieldType.html
 const Types: Map<string, JSONSchema6> = new Map([

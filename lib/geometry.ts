@@ -2,13 +2,13 @@ import EventEmitter from 'node:events';
 import Err from '@openaddresses/batch-error';
 import rings2geojson from './rings2geojson.js';
 import Fetch from './fetch.js';
-import { Feature, GeoJsonProperties } from 'geojson';
+import type { Feature, GeoJsonProperties } from 'geojson';
 import Schema from './schema.js'
-import { JSONSchema6, JSONSchema6Definition } from 'json-schema';
+import type { JSONSchema6, JSONSchema6Definition } from 'json-schema';
 import {
-    EsriDumpConfig,
     EsriDumpConfigApproach
 } from '../index.js';
+import type { EsriDumpConfig } from '../index.js';
 
 interface Field {
     name: string;

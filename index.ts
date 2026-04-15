@@ -2,14 +2,14 @@ import Geometry from './lib/geometry.js';
 import Discovery from './lib/discovery.js';
 import Fetch from './lib/fetch.js';
 import EventEmitter from 'node:events';
-import { Feature } from 'geojson';
+import type { Feature } from 'geojson';
 import Err from '@openaddresses/batch-error';
 import rewind from './lib/rewind.js';
 import Schema from './lib/schema.js';
 import TileJSON from './lib/tilejson.js';
-import {
-    JSONSchema6,
-} from 'json-schema';
+import StyleJSON from './lib/stylejson.js';
+import type { MapLibreStyle } from './lib/stylejson.js';
+import type { JSONSchema6 } from 'json-schema';
 
 const SUPPORTED = ['FeatureServer', 'MapServer', 'ImageServer'];
 
@@ -85,6 +85,11 @@ export default class EsriDump extends EventEmitter {
     async schema(): Promise<JSONSchema6> {
         const metadata = await this.#fetchMeta(false);
         return Schema(metadata);
+    }
+
+    async stylejson(): Promise<MapLibreStyle> {
+        const metadata = await this.#fetchMeta(false);
+        return StyleJSON(metadata);
     }
 
     async discover() {

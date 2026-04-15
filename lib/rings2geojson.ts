@@ -1,4 +1,4 @@
-import { Geometry } from 'geojson';
+import type { Geometry } from 'geojson';
 
 /* Code from https://github.com/Esri/Terraformer
    and https://github.com/Esri/terraformer-arcgis-parser

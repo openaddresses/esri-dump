@@ -10,6 +10,11 @@
 
 ## Version History
 
+### v6.2.0 - 2026-04-15
+
+- :rocket: Add support for generating StyleJSON from an ESRI Feature Server
+- :arrow_up: Update to Typescript 6.0
+
 ### v6.1.1 - 2026-03-31
 
 - :bug: Include WKID.json in dist

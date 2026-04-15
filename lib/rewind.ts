@@ -1,4 +1,4 @@
-import {
+import type {
     GeoJSON,
     FeatureCollection,
     GeometryCollection,
@@ -7,7 +7,7 @@ import {
     MultiPolygon
 } from 'geojson';
 
-export default function rewind(gj: GeoJSON, outer?: any) {
+export default function rewind(gj: GeoJSON | null, outer?: any) {
     const type = gj && gj.type;
 
     if (type === 'FeatureCollection') {

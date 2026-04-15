@@ -1,6 +1,6 @@
 import EventEmitter from 'node:events';
 import Fetch from './fetch.js';
-import { EsriDumpConfig } from '../index.js';
+import type { EsriDumpConfig } from '../index.js';
 import Schema from './schema.js';
 
 export interface DiscoveryDocument {

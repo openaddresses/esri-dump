@@ -1,4 +1,4 @@
-import { EsriDumpConfig } from '../index.js';
+import type { EsriDumpConfig } from '../index.js';
 
 // TODO: Remove this once TypeScript has fetch definitions for core node
 export interface FetchRequest {
