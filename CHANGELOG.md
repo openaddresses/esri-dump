@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v6.3.0 - 2026-05-19
+
+- :arrow_up: Update Core Deps
+
 ### v6.2.0 - 2026-04-15
 
 - :rocket: Add support for generating StyleJSON from an ESRI Feature Server
