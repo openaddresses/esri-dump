@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v6.4.0 - 2026-06-25
+
+- :bug: Ensure XML attributes have XML escapes decoded
+
 ### v6.3.0 - 2026-05-19
 
 - :arrow_up: Update Core Deps

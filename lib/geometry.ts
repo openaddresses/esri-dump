@@ -5,6 +5,7 @@ import Fetch from './fetch.js';
 import type { Feature, GeoJsonProperties } from 'geojson';
 import Schema from './schema.js'
 import type { JSONSchema6, JSONSchema6Definition } from 'json-schema';
+import { xml2js } from 'xml-js';
 import {
     EsriDumpConfigApproach
 } from '../index.js';
@@ -232,7 +233,8 @@ export default class Geometry extends EventEmitter {
             ) {
                 properties[prop] = new Date(esrifeature.attributes[prop]).toISOString();
             } else {
-                properties[prop] = esrifeature.attributes[prop];
+                const val = esrifeature.attributes[prop];
+                properties[prop] = typeof val === 'string' ? Geometry.decodeHtmlEntities(val) : val;
             }
         }
 
@@ -272,6 +274,16 @@ export default class Geometry extends EventEmitter {
             { xmin: bbox.xmin, ymin: bbox.ymin + halfHeight, xmax: bbox.xmin + halfWidth, ymax: bbox.ymax },
             { xmin: bbox.xmin + halfWidth, ymin: bbox.ymin + halfHeight, xmax: bbox.xmax, ymax: bbox.ymax }
         ];
+    }
+
+    static decodeHtmlEntities(value: string): string {
+        if (!value.includes('&')) return value;
+        try {
+            const parsed = xml2js(`<x>${value}</x>`, { compact: true }) as any;
+            return parsed.x._text ?? value;
+        } catch {
+            return value;
+        }
     }
 
     static findOidField(fields: Field[]): string {

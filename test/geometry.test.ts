@@ -62,6 +62,16 @@ test('geometry#splitBbox', () => {
     ], 'returns split bbox');
 });
 
+test('geometry#decodeHtmlEntities', () => {
+    assert.equal(Geometry.decodeHtmlEntities("Larimer County Sheriff&#x27;s Office"), "Larimer County Sheriff's Office", 'decodes &#x27; hex entity');
+    assert.equal(Geometry.decodeHtmlEntities("test&#39;s"), "test's Office".replace(' Office', ''), 'decodes &#39; decimal entity');
+    assert.equal(Geometry.decodeHtmlEntities("a &amp; b"), 'a & b', 'decodes &amp;');
+    assert.equal(Geometry.decodeHtmlEntities("&lt;tag&gt;"), '<tag>', 'decodes &lt; &gt;');
+    assert.equal(Geometry.decodeHtmlEntities("say &quot;hello&quot;"), 'say "hello"', 'decodes &quot;');
+    assert.equal(Geometry.decodeHtmlEntities("it&apos;s"), "it's", 'decodes &apos;');
+    assert.equal(Geometry.decodeHtmlEntities("no entities here"), 'no entities here', 'leaves plain strings unchanged');
+});
+
 test('geometry#findOidField', () =>{
     assert.equal(Geometry.findOidField([{
         name: 'test',

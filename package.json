@@ -34,6 +34,7 @@
     "dependencies": {
         "@openaddresses/batch-error": "^2.2.0",
         "@types/json-schema": "^7.0.12",
-        "proj4": "^2.20.4"
+        "proj4": "^2.20.4",
+        "xml-js": "^1.6.11"
     }
 }
