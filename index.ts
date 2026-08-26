@@ -71,7 +71,10 @@ export default class EsriDump extends EventEmitter {
     }
 
     async tilejson(): Promise<ReturnType<typeof TileJSON>> {
-        const metadata = await this.#fetchMeta(false);
+        const metadata = await this.#fetchMeta({
+            requireGeometry: false,
+            requireExtent: true
+        });
 
         return TileJSON(metadata, {
             resourceType: this.resourceType
@@ -83,12 +86,19 @@ export default class EsriDump extends EventEmitter {
     }
 
     async schema(): Promise<JSONSchema6> {
-        const metadata = await this.#fetchMeta(false);
+        const metadata = await this.#fetchMeta({
+            requireGeometry: false,
+            requireExtent: false
+        });
+
         return Schema(metadata);
     }
 
     async stylejson(): Promise<MapLibreStyle> {
-        const metadata = await this.#fetchMeta(false);
+        const metadata = await this.#fetchMeta({
+            requireGeometry: false,
+            requireExtent: false
+        });
         return StyleJSON(metadata);
     }
 
@@ -115,7 +125,10 @@ export default class EsriDump extends EventEmitter {
         map?: (g: Geometry, f: Feature) => Feature
     }) {
         if (!config) config = {};
-        const metadata = await this.#fetchMeta();
+        const metadata = await this.#fetchMeta({
+            requireGeometry: true,
+            requireExtent: false
+        });
 
         try {
             const geom = new Geometry(this.url, metadata);
@@ -135,7 +148,13 @@ export default class EsriDump extends EventEmitter {
         }
     }
 
-    async #fetchMeta(requireGeometry=true) {
+    async #fetchMeta(opts: {
+        requireGeometry?: boolean,
+        requireExtent?: boolean
+    } = {
+        requireGeometry: true,
+        requireExtent: false
+    }) {
         const url = new URL(this.url);
 
         if (process.env.DEBUG) console.error(String(url));
@@ -148,7 +167,7 @@ export default class EsriDump extends EventEmitter {
 
         if (metadata.error) {
             return this.emit('error', new Err(400, null, 'Server metadata error: ' + metadata.error.message));
-        } else if (requireGeometry && metadata.capabilities && metadata.capabilities.indexOf('Query') === -1 ) {
+        } else if (opts?.requireGeometry && metadata.capabilities && metadata.capabilities.indexOf('Query') === -1 ) {
             return this.emit('error', new Err(400, null, 'Layer doesn\'t support query operation.'));
         } else if (metadata.folders || metadata.services) {
             let errorMessage = 'Endpoint provided is not a Server resource.\n';
@@ -176,9 +195,9 @@ export default class EsriDump extends EventEmitter {
 
         this.geomType = metadata.geometryType;
 
-        if (requireGeometry && !this.geomType) {
+        if (opts?.requireGeometry && !this.geomType) {
             return this.emit('error', new Err(400, null, 'no geometry'));
-        } else if (!metadata.extent && !metadata.initialExtent && !metadata.fullExtent) {
+        } else if (opts?.requireExtent && !metadata.extent && !metadata.initialExtent && !metadata.fullExtent) {
             return this.emit('error', new Err(400, null, 'Layer doesn\'t list an extent.'));
         } else if ('subLayers' in metadata && metadata.subLayers.length > 0) {
             return this.emit('error', new Err(400, null, 'Specified layer has sublayers.'));

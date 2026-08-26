@@ -10,6 +10,11 @@
 
 ## Version History
 
+### v6.6.0 - 2026-06-26
+
+- :rocket: Only require extent when using `BBOX` fetch method
+- :arrow_up: Update Core Deps
+
 ### v6.5.0 - 2026-06-25
 
 - :arrow_up: Update Core Deps

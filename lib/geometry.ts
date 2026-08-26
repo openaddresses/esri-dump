@@ -40,7 +40,12 @@ export default class Geometry extends EventEmitter {
         super();
 
         this.baseUrl = url;
-        this.paths = [metadata.extent as Path];
+
+        if (metadata.extent) {
+            this.paths = [metadata.extent as Path];
+        } else {
+            this.paths = [];
+        }
 
         this.geomType = metadata.geometryType;
         this.maxRecords = metadata.maxRecordCount || null;
@@ -147,6 +152,10 @@ export default class Geometry extends EventEmitter {
 
     async fetch_bbox(config: EsriDumpConfig) {
         const queryFragment = config.approach === EsriDumpConfigApproach.TOP_FEATURES_BBOX ? '/queryTopFeatures' : '/query';
+
+        if (!this.paths.length) {
+            return this.emit('error', new Err(400, null, 'No layer extent provided - required for BBOX approach'));
+        }
 
         while (this.paths.length) {
             const bounds = this.paths.pop();
